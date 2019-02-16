@@ -24,3 +24,6 @@ hs_err_pid*
 
 # VSCode Prefs
 .vscode/
+
+# Maven build
+target/
