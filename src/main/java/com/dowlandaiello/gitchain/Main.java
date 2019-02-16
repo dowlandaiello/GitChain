@@ -7,7 +7,11 @@ package com.dowlandaiello.gitchain;
  * @since 15.02.2019
  */
 public class Main {
-    // main - GitChain node daemon entry point
+    /**
+     * A GitChain node's entry point.
+     * 
+     * @param args node parameters
+     */
     public static void main( String[] args ) {
         
     }
