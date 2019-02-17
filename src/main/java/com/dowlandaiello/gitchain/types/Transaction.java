@@ -3,6 +3,7 @@ package com.dowlandaiello.gitchain.types;
 import java.io.Serializable;
 import java.math.BigInteger;
 import java.security.SignatureException;
+import java.util.Arrays;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -88,7 +89,7 @@ public class Transaction implements Serializable {
     public static boolean SignTransaction(Transaction transaction, BigInteger privateKey) {
         BigInteger publicKey = Sign.publicKeyFromPrivate(privateKey); // Get public key
 
-        if (transaction.Bytes() == null || transaction.Signature != null || transaction.Sender != publicKey.toByteArray()) { // Check cannot sign, already signed, or invalid signature
+        if (transaction.Bytes() == null || transaction.Signature != null || !Arrays.equals(transaction.Sender, publicKey.toByteArray())) { // Check cannot sign, already signed, or invalid signature
             return false; // Nothing to sign ¯\_(ツ)_/¯
         }
 
