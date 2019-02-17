@@ -2,6 +2,7 @@ package com.dowlandaiello.gitchain.types;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * Mempool is a list of pending transactions, that of which have not yet been included in a block.
@@ -37,11 +38,36 @@ public class Mempool implements Serializable {
     }
 
     /**
+     * Search through the working mempool, returning the index of a transaction w/ matching hash.
+     * 
+     * @param hash hash to query
+     * @return index of found transaction
+     */
+    public Integer QueryTransaction(byte[] hash) {
+        for (Transaction transaction: this.TransactionList) { // Iterate through transactions
+            if (Arrays.equals(transaction.Hash, hash)) { // Check matching hash
+                return this.TransactionList.indexOf(transaction); // Return index
+            }
+        }
+
+        return -1; // No matching transaction
+    }
+
+    /**
      * Remove a given transaction, transaction from the mempool.
      * 
      * @param transaction transaction to remove from mempool
+     * @return whether the operation was successful
      */
-    public boolean RemoveTransaction(Transaction transaction) {
+    public boolean RemoveTransaction(byte[] hash) {
+        int txIndex = QueryTransaction(hash); // Get tx index
 
+        if (txIndex == -1) { // Check non-existent
+            return false; // Failed
+        }
+
+        this.TransactionList.remove(txIndex); // Remove transaction
+
+        return true; // Success
     }
 }
