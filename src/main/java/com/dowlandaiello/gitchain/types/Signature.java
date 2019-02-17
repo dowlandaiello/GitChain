@@ -2,6 +2,9 @@ package com.dowlandaiello.gitchain.types;
 
 import java.math.BigInteger;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
 import org.web3j.crypto.ECKeyPair;
 import org.web3j.crypto.Sign;
 
@@ -29,5 +32,28 @@ public class Signature {
         Sign.SignatureData signature = Sign.signMessage(transaction.Bytes(), keyPair, true); // Sign tx
 
         this.Web3Signature = signature; // Set signature
+    }
+
+    /**
+     * Marshal the given transaction to a string.
+     * 
+     * @return the marshaled signature
+     */
+    public String String() {
+        Gson gson = new GsonBuilder().setPrettyPrinting().create(); // Init gson
+
+        return gson.toJson(this); // Return JSON marshaled
+    }
+
+    /**
+     * For all the Java plebs out there...
+     * 
+     * @return the marshaled signature
+     */
+    @Override
+    public String toString() {
+        Gson gson = new GsonBuilder().setPrettyPrinting().create(); // Init gson
+
+        return gson.toJson(this); // Return JSON marshaled
     }
 }
