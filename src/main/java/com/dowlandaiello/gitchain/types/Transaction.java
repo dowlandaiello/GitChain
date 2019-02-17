@@ -2,6 +2,7 @@ package com.dowlandaiello.gitchain.types;
 
 import java.io.Serializable;
 import java.math.BigInteger;
+import java.security.SignatureException;
 
 import org.apache.commons.lang3.SerializationUtils;
 import org.web3j.crypto.Sign;
@@ -46,7 +47,7 @@ public class Transaction implements Serializable {
      * @param recipient transaction recipient expressed as byte array
      * @param value transaction value
      * @param operation given tx operation
-     * @param payload transaction asm bytecodes
+     * @param payload transaction asm bytecode
      */
     public Transaction(int nonce, byte[] sender, byte[] recipient, float value, int operation, byte[] payload) {
         this.AccountNonce = nonce; // Set nonce
@@ -91,6 +92,32 @@ public class Transaction implements Serializable {
         transaction.Signature = new Signature(transaction, privateKey); // Sign transaction
 
         return true; // Return success
+    }
+
+    /**
+     * Verify the integrity of a given transaction's signature.
+     * 
+     * @param Transaction the transaction to verify
+     * @return whether the transaction is indeed valid
+     */
+    public static boolean VerifyTransactionSignature(Transaction transaction) {
+        if (transaction.Signature == null) { // Check has a signature
+            return false; // Nothing to verify ¯\_(ツ)_/¯
+        }
+        
+        BigInteger recoveredPublicKey; // Init buffer
+
+        try {
+            recoveredPublicKey = Sign.signedMessageToKey(transaction.Bytes(), transaction.Signature.Web3Signature); // Recover public key
+        } catch (SignatureException e) {
+            return false; // Err
+        }
+
+        if (!transaction.Sender.equals(recoveredPublicKey.toByteArray())) { // Check invalid
+            return false; // Not valid
+        }
+
+        return true; // Valid signature
     }
 
     /**
