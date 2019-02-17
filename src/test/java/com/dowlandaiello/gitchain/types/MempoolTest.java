@@ -49,4 +49,46 @@ public class MempoolTest {
             fail(e.getLocalizedMessage()); // Panic
         }
     }
+
+    /**
+     * Test mempool query helper.
+     */
+    @Test
+    public void TestQueryTransaction() {
+        try {
+            ECKeyPair keyPair = Keys.createEcKeyPair(); // Generate a new key pair
+
+            Transaction transaction = new Transaction(0, keyPair.getPublicKey().toByteArray(), keyPair.getPublicKey().toByteArray(), 0f, 0, keyPair.getPublicKey().toByteArray()); // Initialize transaction
+
+            Mempool mempool = new Mempool(transaction); // Initialize mempool
+
+            assertTrue("mempool must not be nil", mempool != null); // Ensure signature exists
+
+            int transactionIndex = mempool.QueryTransaction(transaction.Hash); // Get index
+
+            assertTrue("transaction index must be 0", transactionIndex == 0); // Ensure index is 0
+        } catch (Exception e) {
+            fail(e.getLocalizedMessage()); // Panic
+        }
+    }
+
+    /**
+     * Test mempool remove tx helper.
+     */
+    @Test
+    public void TestRemoveTransaction() {
+        try {
+            ECKeyPair keyPair = Keys.createEcKeyPair(); // Generate a new key pair
+
+            Transaction transaction = new Transaction(0, keyPair.getPublicKey().toByteArray(), keyPair.getPublicKey().toByteArray(), 0f, 0, keyPair.getPublicKey().toByteArray()); // Initialize transaction
+
+            Mempool mempool = new Mempool(transaction); // Initialize mempool
+
+            assertTrue("mempool must not be nil", mempool != null); // Ensure signature exists
+
+            assertTrue("must be able to remove transaction", mempool.RemoveTransaction(transaction.Hash)); // Remove transaction
+        } catch (Exception e) {
+            fail(e.getLocalizedMessage()); // Panic
+        }
+    }
 }

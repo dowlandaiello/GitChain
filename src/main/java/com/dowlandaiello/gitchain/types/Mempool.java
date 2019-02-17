@@ -43,7 +43,7 @@ public class Mempool implements Serializable {
      * @param hash hash to query
      * @return index of found transaction
      */
-    public Integer QueryTransaction(byte[] hash) {
+    public int QueryTransaction(byte[] hash) {
         for (Transaction transaction: this.TransactionList) { // Iterate through transactions
             if (Arrays.equals(transaction.Hash, hash)) { // Check matching hash
                 return this.TransactionList.indexOf(transaction); // Return index
