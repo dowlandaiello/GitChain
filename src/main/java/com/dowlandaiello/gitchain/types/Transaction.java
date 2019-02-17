@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.math.BigInteger;
 
 import org.apache.commons.lang3.SerializationUtils;
+import org.web3j.crypto.Sign;
 
 /**
  * Transaction is a data alteration represented by the transaction primitive (e.g. updating a file), that
@@ -76,14 +77,18 @@ public class Transaction implements Serializable {
     /**
      * Sign a given transaction.
      * 
+     * @param Transaction the transaction to sign
      * @param privateKey the given private key to sign with
      * @return whether the transaction was signed successfully
      */
-    public boolean Sign(BigInteger privateKey) {
-        if (this.Bytes() == null) {
+    public static boolean SignTransaction(Transaction transaction, BigInteger privateKey) {
+        BigInteger publicKey = Sign.publicKeyFromPrivate(privateKey); // Get public key
+
+        if (transaction.Bytes() == null || transaction.Signature != null || transaction.Sender != publicKey.toByteArray()) { // Check cannot sign, already signed, or invalid signature
             return false; // Nothing to sign ¯\_(ツ)_/¯
         }
-        this.Signature = new Signature(this, privateKey); // Sign transaction
+
+        transaction.Signature = new Signature(transaction, privateKey); // Sign transaction
 
         return true; // Return success
     }
