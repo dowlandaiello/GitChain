@@ -5,6 +5,7 @@ import java.math.BigInteger;
 import java.security.SignatureException;
 import java.util.Arrays;
 
+import com.dowlandaiello.gitchain.crypto.Sha;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -43,6 +44,9 @@ public class Transaction implements Serializable {
     /* Transaction payload (e.g. op => 0, payload => hash(file_name)) */
     public byte[] Payload;
 
+    /* Transaction hash */
+    public byte[] Hash;
+
     /**
      * Initialize a new transaction.
      * 
@@ -60,6 +64,7 @@ public class Transaction implements Serializable {
         this.Value = value; // Set value
         this.Operation = operation; // Set operation
         this.Payload = payload; // Set payload
+        this.Hash = Sha.Sha3(this.Bytes()); // Set hash
     }
 
     /**

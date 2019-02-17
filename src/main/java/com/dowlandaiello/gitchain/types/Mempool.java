@@ -30,8 +30,18 @@ public class Mempool implements Serializable {
      * Add a given transaction, transaction to the mempool.
      * 
      * @param transaction transaction to add to mempool
+     * @return transaction was added successfully
      */
     public boolean AddTransaction(Transaction transaction) {
         return this.TransactionList.add(transaction); // Add tx
+    }
+
+    /**
+     * Remove a given transaction, transaction from the mempool.
+     * 
+     * @param transaction transaction to remove from mempool
+     */
+    public boolean RemoveTransaction(Transaction transaction) {
+
     }
 }

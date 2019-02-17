@@ -14,6 +14,7 @@ public class Sha {
      * Hash a given byte array, b, via sha3.
      * 
      * @param b byte array to hash
+     * @return hashed byte array
      */
     public static byte[] Sha3(byte[] b) {
         SHA3.DigestSHA3 digestSHA3 = new SHA3.Digest512(); // Init sha3 digest
@@ -25,6 +26,7 @@ public class Sha {
      * Hash a given byte array, b, via sha3d.
      * 
      * @param b byte array to hash
+     * @return hashed byte array
      */
     public static byte[] Sha3d(byte[] b) {
         return Sha3(Sha3(b)); // Return hash
