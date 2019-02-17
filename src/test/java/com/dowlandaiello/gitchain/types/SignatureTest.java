@@ -1,5 +1,6 @@
 package com.dowlandaiello.gitchain.types;
 
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import org.junit.Test;
@@ -25,7 +26,7 @@ public class SignatureTest {
 
             Signature signature = new Signature(transaction, keyPair.getPrivateKey()); // Sign with private key
 
-            System.out.println(signature.toString()); // Log signature
+            assertTrue("signature must not be nil", signature != null); // Ensure signature exists
         } catch (Exception e) {
             fail(e.getLocalizedMessage()); // Panic
         }
@@ -43,7 +44,7 @@ public class SignatureTest {
 
             Signature signature = new Signature(transaction, keyPair.getPrivateKey()); // Sign with private key
 
-            System.out.println(signature.String()); // Log signature
+            assertTrue("string val must not be nil", signature.toString() != null); // Ensure can marshal
         } catch (Exception e) {
             fail(e.getLocalizedMessage()); // Panic
         }
@@ -61,7 +62,7 @@ public class SignatureTest {
 
             Signature signature = new Signature(transaction, keyPair.getPrivateKey()); // Sign with private key
 
-            System.out.println(signature.toString()); // Log signature
+            assertTrue("string val must not be nil", signature.toString() != null); // Ensure can marshal
         } catch (Exception e) {
             fail(e.getLocalizedMessage()); // Panic
         }
