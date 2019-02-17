@@ -1,5 +1,6 @@
 package com.dowlandaiello.gitchain.types;
 
+import java.io.Serializable;
 import java.math.BigInteger;
 
 import com.google.gson.Gson;
@@ -14,9 +15,14 @@ import org.web3j.crypto.Sign;
  * @author Dowland Aiello
  * @since 16.02.2019
  */
-public class Signature {
-    /* Web3 signature */
-    Sign.SignatureData Web3Signature;
+public class Signature implements Serializable {
+    /* lol serialization */
+    static final long serialVersionUID = 0L;
+
+    /* raw signature values */
+    public final byte V;
+    public final byte[] R;
+    public final byte[] S;
 
     /**
      * Initialize a new transaction signature.
@@ -31,7 +37,9 @@ public class Signature {
 
         Sign.SignatureData signature = Sign.signMessage(transaction.Bytes(), keyPair, true); // Sign tx
 
-        this.Web3Signature = signature; // Set signature
+        this.V = signature.getV(); // Set v
+        this.R = signature.getR(); // Set r
+        this.S = signature.getS(); // Set s
     }
 
     /**
