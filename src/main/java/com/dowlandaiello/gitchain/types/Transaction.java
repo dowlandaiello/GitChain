@@ -111,13 +111,15 @@ public class Transaction implements Serializable {
         
         BigInteger recoveredPublicKey; // Init buffer
 
+        Transaction unchangedSignatureTx = new Transaction(transaction.AccountNonce, transaction.Sender, transaction.Recipient, transaction.Value, transaction.Operation, transaction.Payload);
+
         try {
-            recoveredPublicKey = Sign.signedMessageToKey(transaction.Bytes(), transaction.Signature.Web3Signature); // Recover public key
+            recoveredPublicKey = Sign.signedMessageToKey(unchangedSignatureTx.Bytes(), new Sign.SignatureData(transaction.Signature.V, transaction.Signature.R, transaction.Signature.S)); // Recover public key
         } catch (SignatureException e) {
             return false; // Err
         }
 
-        if (!transaction.Sender.equals(recoveredPublicKey.toByteArray())) { // Check invalid
+        if (!Arrays.equals(transaction.Sender, recoveredPublicKey.toByteArray())) { // Check invalid
             return false; // Not valid
         }
 
