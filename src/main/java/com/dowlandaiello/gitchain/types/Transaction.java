@@ -5,6 +5,7 @@ import java.math.BigInteger;
 import java.security.SignatureException;
 
 import org.apache.commons.lang3.SerializationUtils;
+import org.web3j.crypto.ECKeyPair;
 import org.web3j.crypto.Sign;
 
 /**

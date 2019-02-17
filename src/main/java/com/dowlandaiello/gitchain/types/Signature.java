@@ -6,7 +6,7 @@ import org.web3j.crypto.ECKeyPair;
 import org.web3j.crypto.Sign;
 
 /**
- * Signature holds a primitive secp256k1 signature
+ * Signature holds a primitive secp256k1 signature.
  * 
  * @author Dowland Aiello
  * @since 16.02.2019
