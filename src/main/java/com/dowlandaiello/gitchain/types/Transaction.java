@@ -4,6 +4,9 @@ import java.io.Serializable;
 import java.math.BigInteger;
 import java.security.SignatureException;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
 import org.apache.commons.lang3.SerializationUtils;
 import org.web3j.crypto.Sign;
 
@@ -127,5 +130,28 @@ public class Transaction implements Serializable {
      */
     public byte[] Bytes() {
         return(SerializationUtils.serialize(this)); // Serialize
+    }
+
+    /**
+     * Marshal the given transaction to a string.
+     * 
+     * @return the marshaled transaction
+     */
+    public String String() {
+        Gson gson = new GsonBuilder().setPrettyPrinting().create(); // Init gson
+
+        return gson.toJson(this); // Return JSON marshaled
+    }
+
+    /**
+     * For all the Java plebs out there...
+     * 
+     * @return the marshaled transaction
+     */
+    @Override
+    public String toString() {
+        Gson gson = new GsonBuilder().setPrettyPrinting().create(); // Init gson
+
+        return gson.toJson(this); // Return JSON marshaled
     }
 }
