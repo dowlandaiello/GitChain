@@ -26,7 +26,7 @@ public class Signature {
 
         ECKeyPair keyPair = new ECKeyPair(privateKey, publicKey); // Get key pair
 
-        Sign.SignatureData signature = Sign.signMessage(transaction.Bytes(), keyPair, false); // Sign tx
+        Sign.SignatureData signature = Sign.signMessage(transaction.Bytes(), keyPair, true); // Sign tx
 
         this.Web3Signature = signature; // Set signature
     }
