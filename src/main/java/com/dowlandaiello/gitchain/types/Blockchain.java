@@ -49,6 +49,8 @@ public class Blockchain {
         this.Network = chainConfig.Network; // Set network id
         this.GenesisBlock = genesisBlock; // Set genesis block
         this.TotalDifficulty = genesisBlock.Difficulty; // Set difficulty
+        this.GenesisBlock = genesisBlock; // Set genesis
+        this.Blocks = new ArrayList<Block>(); // Construct block list
         this.Blocks.add(genesisBlock); // Add genesis reeReeReeReeRee
     }
 
