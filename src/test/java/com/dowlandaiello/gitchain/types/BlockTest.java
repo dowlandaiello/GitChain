@@ -34,8 +34,8 @@ public class BlockTest {
             fail(e.getLocalizedMessage()); // Panic
         }
 
-        Block emptyBlock = new Block(emptyTxArr, new byte[0], new byte[0], 0l, 0l); // Initialize block
-        Block block = new Block(txArr, new byte[0], new byte[0], 0l, 0l); // Initialize block
+        Block emptyBlock = new Block(emptyTxArr, new byte[0], new byte[0], 0f, 0l); // Initialize block
+        Block block = new Block(txArr, new byte[0], new byte[0], 0f, 0l); // Initialize block
 
         assertTrue("block must not be null", emptyBlock != null); // Ensure not null
         assertTrue("block must not be null", block != null); // Ensure not null
@@ -60,7 +60,7 @@ public class BlockTest {
             fail(e.getLocalizedMessage()); // Panic
         }
 
-        Block block = new Block(txArr, new byte[0], new byte[0], 0l, 0l); // Initialize block
+        Block block = new Block(txArr, new byte[0], new byte[0], 0f, 0l); // Initialize block
 
         assertTrue("block must not be null", block != null); // Ensure not null
         assertTrue("block bytes must not be null", block.Bytes() != null); // Ensure not null
@@ -85,7 +85,7 @@ public class BlockTest {
             fail(e.getLocalizedMessage()); // Panic
         }
 
-        Block block = new Block(txArr, new byte[0], new byte[0], 0l, 0l); // Initialize block
+        Block block = new Block(txArr, new byte[0], new byte[0], 0f, 0l); // Initialize block
 
         assertTrue("block must not be null", block != null); // Ensure not null
         assertTrue("hash sum most not be null", Block.HashTransactionSum(txArr) != null); // Ensure not null

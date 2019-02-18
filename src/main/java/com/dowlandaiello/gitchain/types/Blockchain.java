@@ -31,7 +31,7 @@ public class Blockchain {
     public int Network;
 
     /* Network difficulty */
-    public long TotalDifficulty;
+    public float TotalDifficulty;
 
     /**
      * Initialize a blockchain with a given genesis block and chain config.
@@ -42,7 +42,7 @@ public class Blockchain {
     public Blockchain(ChainConfig chainConfig) {
         Block genesisBlock = MakeGenesisBlock(chainConfig); // Make genesis
 
-        if (genesisBlock.Difficulty == 0) genesisBlock.Difficulty = 1; // Set difficulty
+        if (genesisBlock.Difficulty == 0) genesisBlock.Difficulty = 1f; // Set difficulty
 
         this.Config = chainConfig; // Set chain config
         this.ChainID = chainConfig.Chain; // Set chain name
@@ -112,7 +112,7 @@ public class Blockchain {
      * @param parent working block to calculate from
      * @return calculated difficulty
      */
-    public static long CalculateDifficulty(Block parent, long blockTime, long blockNonce) {
-        return (long) (parent.Difficulty + parent.Difficulty / 2048 * Math.max(1 - (blockTime - parent.Timestamp) / 10, -99) + (Math.pow(2, ((blockNonce / 100000) - 1))));
+    public static float CalculateDifficulty(Block parent, long blockTime, long blockNonce) {
+        return (float) (parent.Difficulty + parent.Difficulty / 2048 * Math.max(1 - (blockTime - parent.Timestamp) / 10, -99) + (Math.pow(2, ((blockNonce / 100000) - 1))));
     }
 }

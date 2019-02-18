@@ -31,7 +31,7 @@ public class Block implements Serializable {
     public byte[] Coinbase;
 
     /* Chain difficulty at block */
-    public long Difficulty;
+    public Float Difficulty;
 
     /* Block index in chain */
     public long Nonce;
@@ -51,7 +51,7 @@ public class Block implements Serializable {
      * @param difficulty network difficulty measurement at block
      * @param nonce block index in chain
      */
-    public Block(Transaction[] transactions, byte[] parentHash, byte[] coinbase, long difficulty, long nonce) {
+    public Block(Transaction[] transactions, byte[] parentHash, byte[] coinbase, Float difficulty, long nonce) {
         this.Transactions = transactions; // Set transactions
         this.MerkleRoot = HashTransactionSum(transactions); // Set merkle root
         this.ParentHash = parentHash; // Set parent hash
