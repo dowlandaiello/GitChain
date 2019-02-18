@@ -1,8 +1,11 @@
 package com.dowlandaiello.gitchain.types;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 import com.dowlandaiello.gitchain.crypto.Sha;
+
+import org.apache.commons.lang3.SerializationUtils;
 
 /**
  * Block is a data type containing a list of transactions, as well as a merkle root.
@@ -10,7 +13,10 @@ import com.dowlandaiello.gitchain.crypto.Sha;
  * @author Dowland Aiello
  * @since 17.02.2019
  */
-public class Block {
+public class Block implements Serializable {
+    /* lol serialization */
+    static final long serialVersionUID = 0L;
+
     /* Transactions in block */
     Transaction[] Transactions;
 
@@ -29,6 +35,9 @@ public class Block {
     /* Block index in chain */
     public long Nonce;
 
+    /* Block hash */
+    public byte[] Hash;
+
     /**
      * Initialize a new block with a transaction set, transactions.
      * 
@@ -45,12 +54,23 @@ public class Block {
         this.Coinbase = coinbase; // Set coinbase
         this.Difficulty = difficulty; // Set difficulty
         this.Nonce = nonce; // Set nonce
+        this.Hash = Sha.Sha3(this.Bytes()); // Set hash
+    }
+
+    /**
+     * Serialize block to byte array/
+     * 
+     * @return byte serialized block
+     */
+    public byte[] Bytes() {
+        return(SerializationUtils.serialize(this)); // Serialize
     }
 
     /**
      * Calculate the hash sum of several transactions.
      * 
      * @param transactions transaction set to calculate hash sum
+     * @return byte-array-represented hash sum
      */
     public static byte[] HashTransactionSum(Transaction[] transactions) {
         ArrayList<Byte> byteSum = new ArrayList<Byte>(); // Declare buffer
