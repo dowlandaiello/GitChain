@@ -33,9 +33,9 @@ public class ChainConfigTest {
             fail(e.getLocalizedMessage()); // Panic
         }
 
-        Map<byte[], Float> alloc = new HashMap<byte[], Float>(); // Init hash map
+        Map<String, Float> alloc = new HashMap<String, Float>(); // Init hash map
 
-        alloc.put(keyPair.getPublicKey().toByteArray(), 1000000f); // Set alloc
+        alloc.put(keyPair.getPublicKey().toString(), 1000000f); // Set alloc
 
         ChainConfig chainConfig = new ChainConfig(alloc, 0, "test_chain"); // Initialize chain config
 
@@ -69,9 +69,9 @@ public class ChainConfigTest {
 
         CommonIO.GenesisPath = new File(CommonIO.ConfigPath+"/genesis_test.json").getAbsolutePath(); // Set genesis path
 
-        Map<byte[], Float> alloc = new HashMap<byte[], Float>(); // Init hash map
+        Map<String, Float> alloc = new HashMap<String, Float>(); // Init hash map
 
-        alloc.put(keyPair.getPublicKey().toByteArray(), 1000000f); // Set alloc
+        alloc.put(keyPair.getPublicKey().toString(), 1000000f); // Set alloc
 
         ChainConfig chainConfig = new ChainConfig(alloc, 0, "test_chain"); // Initialize chain config
 

@@ -18,7 +18,7 @@ import com.google.gson.GsonBuilder;
  */
 public class ChainConfig {
     /* Chain supply allocation */
-    public Map<byte[], Float> Alloc;
+    public Map<String, Float> Alloc;
 
     /* Network ID */
     public int Network;
@@ -33,7 +33,7 @@ public class ChainConfig {
      * @param network chain network identifier
      * @param chain chain name / version
      */
-    public ChainConfig(Map<byte[], Float> alloc, int network, String chain) {
+    public ChainConfig(Map<String, Float> alloc, int network, String chain) {
         this.Alloc = alloc; // Set alloc
         this.Network = network; // Set network
         this.Chain = chain; // Set chain
@@ -45,7 +45,7 @@ public class ChainConfig {
      * @param rawJSON raw JSON file to deserialize
      */
     public ChainConfig(byte[] rawJSON) {
-        Gson gson = new Gson(); // Init gson
+        Gson gson = new GsonBuilder().setPrettyPrinting().create(); // Init gson
 
         ChainConfig chainConfig = gson.fromJson(new String(rawJSON), ChainConfig.class);
 
@@ -61,6 +61,7 @@ public class ChainConfig {
      */
     public static ChainConfig ReadChainConfig() {
         File genesisFile = new File(CommonIO.GenesisPath); // Init file
+
         byte[] rawJSON = null; // Declare buffer
 
         try {
@@ -82,7 +83,7 @@ public class ChainConfig {
      * @return whether the operation was successful
      */
     public boolean WriteChainConfig() {
-        Gson gson = new GsonBuilder().setPrettyPrinting().registerTypeHierarchyAdapter(byte[].class, new CommonIO.ByteArrayToBase64TypeAdapter()).create(); // Init gson
+        Gson gson = new GsonBuilder().setPrettyPrinting().create(); // Init gson
 
         CommonIO.MakeDirIfNotExist(CommonIO.ConfigPath); // Make genesis path
 
