@@ -5,6 +5,7 @@ import java.math.BigInteger;
 import java.security.SignatureException;
 import java.util.Arrays;
 
+import com.dowlandaiello.gitchain.common.CommonIO;
 import com.dowlandaiello.gitchain.crypto.Sha;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -21,7 +22,7 @@ import org.web3j.crypto.Sign;
  */
 public class Transaction implements Serializable {
     /* lol serialization */
-    static final long serialVersionUID = 0L;
+    static final long serialVersionUID = CommonIO.SerialVersionUID;
 
     /* Transaction index in account tx list */
     public int AccountNonce;

@@ -4,6 +4,8 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import com.dowlandaiello.gitchain.common.CommonIO;
+
 /**
  * Mempool is a list of pending transactions, that of which have not yet been included in a block.
  * 
@@ -12,7 +14,7 @@ import java.util.Arrays;
  */
 public class Mempool implements Serializable {
     /* lol serialization */
-    static final long serialVersionUID = 0L;
+    static final long serialVersionUID = CommonIO.SerialVersionUID;
 
     /* Pending transactions */
     public ArrayList<Transaction> TransactionList;

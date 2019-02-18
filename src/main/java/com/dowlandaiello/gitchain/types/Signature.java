@@ -3,6 +3,7 @@ package com.dowlandaiello.gitchain.types;
 import java.io.Serializable;
 import java.math.BigInteger;
 
+import com.dowlandaiello.gitchain.common.CommonIO;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -17,7 +18,7 @@ import org.web3j.crypto.Sign;
  */
 public class Signature implements Serializable {
     /* lol serialization */
-    static final long serialVersionUID = 0L;
+    static final long serialVersionUID = CommonIO.SerialVersionUID;
 
     /* raw signature values */
     public final byte V;

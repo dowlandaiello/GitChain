@@ -3,6 +3,7 @@ package com.dowlandaiello.gitchain.types;
 import java.io.Serializable;
 import java.util.ArrayList;
 
+import com.dowlandaiello.gitchain.common.CommonIO;
 import com.dowlandaiello.gitchain.crypto.Sha;
 
 import org.apache.commons.lang3.SerializationUtils;
@@ -15,7 +16,7 @@ import org.apache.commons.lang3.SerializationUtils;
  */
 public class Block implements Serializable {
     /* lol serialization */
-    static final long serialVersionUID = 0L;
+    static final long serialVersionUID = CommonIO.SerialVersionUID;
 
     /* Transactions in block */
     Transaction[] Transactions;
