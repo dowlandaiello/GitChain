@@ -82,13 +82,21 @@ public class ChainConfig {
      * @return whether the operation was successful
      */
     public boolean WriteChainConfig() {
-        Gson gson = new GsonBuilder().setPrettyPrinting().create(); // Init gson
+        Gson gson = new GsonBuilder().setPrettyPrinting().registerTypeHierarchyAdapter(byte[].class, new CommonIO.ByteArrayToBase64TypeAdapter()).create(); // Init gson
+
+        CommonIO.MakeDirIfNotExist(CommonIO.ConfigPath); // Make genesis path
 
         try {
-            gson.toJson(this, new FileWriter(CommonIO.GenesisPath)); // Write gson
+            FileWriter writer = new FileWriter(CommonIO.GenesisPath); // Init writer
+
+            gson.toJson(this, writer); // Write gson
+
+            writer.close(); // Close writer
         } catch (IOException e) { // Catch
             if (!CommonIO.StdoutSilenced) { // Check can print
                 e.printStackTrace(); // Log stack trace
+
+                return false; // Failed
             }
         }
 
