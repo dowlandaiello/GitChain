@@ -1,12 +1,14 @@
 package com.dowlandaiello.gitchain.config;
 
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.Map;
 
 import com.dowlandaiello.gitchain.common.CommonIO;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 /**
  * ChainConfig is a data type containing the chain config (including allocation).
@@ -57,7 +59,7 @@ public class ChainConfig {
      * 
      * @return the read ChainConfig
      */
-    public static ChainConfig ReadChainConfigFromGenesisJSON() {
+    public static ChainConfig ReadChainConfig() {
         File genesisFile = new File(CommonIO.GenesisPath); // Init file
         byte[] rawJSON = null; // Declare buffer
 
@@ -72,5 +74,24 @@ public class ChainConfig {
         ChainConfig chainConfig = new ChainConfig(rawJSON); // init chain config
 
         return chainConfig; // Return chain config
+    }
+
+    /**
+     * Write chain config to persistent memory
+     * 
+     * @return whether the operation was successful
+     */
+    public boolean WriteChainConfig() {
+        Gson gson = new GsonBuilder().setPrettyPrinting().create(); // Init gson
+
+        try {
+            gson.toJson(this, new FileWriter(CommonIO.GenesisPath)); // Write gson
+        } catch (IOException e) { // Catch
+            if (!CommonIO.StdoutSilenced) { // Check can print
+                e.printStackTrace(); // Log stack trace
+            }
+        }
+
+        return true; // Success
     }
 }
