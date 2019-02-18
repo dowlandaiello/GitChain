@@ -40,7 +40,7 @@ public class Block {
      */
     public Block(Transaction[] transactions, byte[] parentHash, byte[] coinbase, long difficulty, long nonce) {
         this.Transactions = transactions; // Set transactions
-        this.MerkleRoot = HashSum(transactions); // Set merkle root
+        this.MerkleRoot = HashTransactionSum(transactions); // Set merkle root
         this.ParentHash = parentHash; // Set parent hash
         this.Coinbase = coinbase; // Set coinbase
         this.Difficulty = difficulty; // Set difficulty
@@ -52,7 +52,7 @@ public class Block {
      * 
      * @param transactions transaction set to calculate hash sum
      */
-    public static byte[] HashSum(Transaction[] transactions) {
+    public static byte[] HashTransactionSum(Transaction[] transactions) {
         ArrayList<Byte> byteSum = new ArrayList<Byte>(); // Declare buffer
 
         for (Transaction transaction: transactions) { // Iterate through transactions

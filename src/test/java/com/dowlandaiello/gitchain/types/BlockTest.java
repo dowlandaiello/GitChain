@@ -63,7 +63,7 @@ public class BlockTest {
         Block block = new Block(txArr, new byte[0], new byte[0], 0l, 0l); // Initialize block
 
         assertTrue("block must not be null", block != null); // Ensure not null
-        assertTrue("hash sum most not be null", Block.HashSum(txArr) != null); // Ensure not null
+        assertTrue("hash sum most not be null", Block.HashTransactionSum(txArr) != null); // Ensure not null
         assertTrue("merkle root must not be null", block.MerkleRoot != null); // Ensure not null
     }
 }
