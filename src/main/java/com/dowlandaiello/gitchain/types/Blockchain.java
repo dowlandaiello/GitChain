@@ -2,7 +2,10 @@ package com.dowlandaiello.gitchain.types;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Map;
+import java.util.Map.Entry;
 
+import com.dowlandaiello.gitchain.common.CommonCoin;
 import com.dowlandaiello.gitchain.config.ChainConfig;
 
 /**
@@ -28,13 +31,86 @@ public class Blockchain {
     public int Network;
 
     /* Network difficulty */
-    public BigInteger TotalDifficulty;
+    public long TotalDifficulty;
 
-    public Blockchain(ChainConfig chainConfig, Block genesisBlock) {
+    /**
+     * Initialize a blockchain with a given genesis block and chain config.
+     * 
+     * @param chainConfig chain configuration
+     * @param genesisBlock chain genesis block
+     */
+    public Blockchain(ChainConfig chainConfig) {
+        Block genesisBlock = MakeGenesisBlock(chainConfig); // Make genesis
+
+        if (genesisBlock.Difficulty == 0) genesisBlock.Difficulty = 1; // Set difficulty
+
         this.Config = chainConfig; // Set chain config
         this.ChainID = chainConfig.Chain; // Set chain name
         this.Network = chainConfig.Network; // Set network id
         this.GenesisBlock = genesisBlock; // Set genesis block
-        this.TotalDifficulty = BigInteger.ZERO; // Set difficulty
+        this.TotalDifficulty = genesisBlock.Difficulty; // Set difficulty
+        this.Blocks.add(genesisBlock); // Add genesis reeReeReeReeRee
+    }
+
+    /**
+     * Generate a new block.
+     * 
+     * @param parent working block to generate from
+     * @param transactions transactions to put in block (usually from mempool)
+     * @return generated block
+     */
+    public Block CreateNewBlock(Block parent, Transaction[] transactions) {
+        long time = System.currentTimeMillis() / 1000; // Get block time
+
+        if (parent.Timestamp >= time) time = parent.Timestamp + 1; // Adjust time to parent block
+
+        return new Block(
+            transactions,
+            parent.Hash,
+            CommonCoin.MinerCoinbase,
+            CalculateDifficulty(parent, time, this.Blocks.size()),
+            this.Blocks.size()
+        ); // Return initialized block
+    }
+
+    /**
+     * Generate a genesis block from a given chain config.
+     * 
+     * @param chainConfig chain config to generate genesis block from
+     */
+    public static Block MakeGenesisBlock(ChainConfig chainConfig) {
+        Transaction[] transactions = new Transaction[chainConfig.Alloc.size()]; // Init tx buffer
+
+        java.util.Iterator<Map.Entry<BigInteger, Float>> i = chainConfig.Alloc.entrySet().iterator(); // Init iterator
+
+        int x = 0; // Declare iterator
+
+        while(i.hasNext()) { // Can iterate
+            Entry<BigInteger, Float> pair = (Map.Entry<BigInteger, Float>)i.next(); // Get pair
+
+            transactions[x] = new Transaction(x, new byte[0], pair.getKey().toByteArray(), pair.getValue(), -1, new byte[0]); // Add tx
+
+            i.remove(); // Remove
+
+            x++; // Iterate
+        }
+
+        return new Block(
+            transactions,
+            new byte[0],
+            CommonCoin.MinerCoinbase,
+            chainConfig.Difficulty,
+            0
+        ); // Return block
+    }
+
+    /**
+     * Calculate the difficulty of a new block, given a parent block, parent.
+     * 
+     * @param parent working block to calculate from
+     * @return calculated difficulty
+     */
+    public static long CalculateDifficulty(Block parent, long blockTime, long blockNonce) {
+        return (long) (parent.Difficulty + parent.Difficulty / 2048 * Math.max(1 - (blockTime - parent.Timestamp) / 10, -99) + (Math.pow(2, ((blockNonce / 100000) - 1))));
     }
 }

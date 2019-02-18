@@ -3,6 +3,7 @@ package com.dowlandaiello.gitchain.config;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.math.BigInteger;
 import java.nio.file.Files;
 import java.util.Map;
 
@@ -18,7 +19,7 @@ import com.google.gson.GsonBuilder;
  */
 public class ChainConfig {
     /* Chain supply allocation */
-    public Map<String, Float> Alloc;
+    public Map<BigInteger, Float> Alloc;
 
     /* Network ID */
     public int Network;
@@ -29,6 +30,9 @@ public class ChainConfig {
     /* Time in seconds between blocks */
     public int BlockTime;
 
+    /* Starting chain difficulty */
+    public long Difficulty;
+
     /**
      * Initialize a new chain config.
      * 
@@ -36,11 +40,12 @@ public class ChainConfig {
      * @param network chain network identifier
      * @param chain chain name / version
      */
-    public ChainConfig(Map<String, Float> alloc, int network, String chain, int blockTime) {
+    public ChainConfig(Map<BigInteger, Float> alloc, int network, String chain, int blockTime, long difficulty) {
         this.Alloc = alloc; // Set alloc
         this.Network = network; // Set network
         this.Chain = chain; // Set chain
         this.BlockTime = blockTime; // Set block time
+        this.Difficulty = difficulty; // Set difficulty
     }
 
     /**
@@ -57,6 +62,7 @@ public class ChainConfig {
         this.Network = chainConfig.Network; // Set network
         this.Chain = chainConfig.Chain; // Set chain
         this.BlockTime = chainConfig.BlockTime; // Set block time
+        this.Difficulty = chainConfig.Difficulty; // Set difficulty
     }
 
     /**

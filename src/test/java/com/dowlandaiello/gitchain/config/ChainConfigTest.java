@@ -4,6 +4,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.File;
+import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -33,11 +34,11 @@ public class ChainConfigTest {
             fail(e.getLocalizedMessage()); // Panic
         }
 
-        Map<String, Float> alloc = new HashMap<String, Float>(); // Init hash map
+        Map<BigInteger, Float> alloc = new HashMap<BigInteger, Float>(); // Init hash map
 
-        alloc.put(keyPair.getPublicKey().toString(), 1000000f); // Set alloc
+        alloc.put(keyPair.getPublicKey(), 1000000f); // Set alloc
 
-        ChainConfig chainConfig = new ChainConfig(alloc, 0, "test_chain", 10); // Initialize chain config
+        ChainConfig chainConfig = new ChainConfig(alloc, 0, "test_chain", 10, 1l); // Initialize chain config
 
         assertTrue("chain config must not be null", chainConfig != null); // Ensure config not null
     }
@@ -57,11 +58,11 @@ public class ChainConfigTest {
 
         CommonIO.GenesisPath = new File(CommonIO.ConfigPath+"/genesis_test.json").getAbsolutePath(); // Set genesis path
 
-        Map<String, Float> alloc = new HashMap<String, Float>(); // Init hash map
+        Map<BigInteger, Float> alloc = new HashMap<BigInteger, Float>(); // Init hash map
 
-        alloc.put(keyPair.getPublicKey().toString(), 1000000f); // Set alloc
+        alloc.put(keyPair.getPublicKey(), 1000000f); // Set alloc
 
-        ChainConfig chainConfig = new ChainConfig(alloc, 0, "test_chain", 10); // Initialize chain config
+        ChainConfig chainConfig = new ChainConfig(alloc, 0, "test_chain", 10, 1l); // Initialize chain config
 
         assertTrue("chain config must not be null", chainConfig != null); // Ensure config not null
 
@@ -87,11 +88,11 @@ public class ChainConfigTest {
 
         CommonIO.GenesisPath = new File(CommonIO.ConfigPath+"/genesis_test.json").getAbsolutePath(); // Set genesis path
 
-        Map<String, Float> alloc = new HashMap<String, Float>(); // Init hash map
+        Map<BigInteger, Float> alloc = new HashMap<BigInteger, Float>(); // Init hash map
 
-        alloc.put(keyPair.getPublicKey().toString(), 1000000f); // Set alloc
+        alloc.put(keyPair.getPublicKey(), 1000000f); // Set alloc
 
-        ChainConfig chainConfig = new ChainConfig(alloc, 0, "test_chain", 10); // Initialize chain config
+        ChainConfig chainConfig = new ChainConfig(alloc, 0, "test_chain", 10, 1l); // Initialize chain config
 
         assertTrue("chain config must not be null", chainConfig != null); // Ensure config not null
 
