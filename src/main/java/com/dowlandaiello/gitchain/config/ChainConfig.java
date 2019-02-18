@@ -26,6 +26,9 @@ public class ChainConfig {
     /* Blockchain ID / Version */
     public String Chain;
 
+    /* Time in seconds between blocks */
+    public int BlockTime;
+
     /**
      * Initialize a new chain config.
      * 
@@ -33,10 +36,11 @@ public class ChainConfig {
      * @param network chain network identifier
      * @param chain chain name / version
      */
-    public ChainConfig(Map<String, Float> alloc, int network, String chain) {
+    public ChainConfig(Map<String, Float> alloc, int network, String chain, int blockTime) {
         this.Alloc = alloc; // Set alloc
         this.Network = network; // Set network
         this.Chain = chain; // Set chain
+        this.BlockTime = blockTime; // Set block time
     }
 
     /**
@@ -52,6 +56,7 @@ public class ChainConfig {
         this.Alloc = chainConfig.Alloc; // Set alloc
         this.Network = chainConfig.Network; // Set network
         this.Chain = chainConfig.Chain; // Set chain
+        this.BlockTime = chainConfig.BlockTime; // Set block time
     }
 
     /**

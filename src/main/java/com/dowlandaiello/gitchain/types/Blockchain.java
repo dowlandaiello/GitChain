@@ -1,5 +1,6 @@
 package com.dowlandaiello.gitchain.types;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 
 import com.dowlandaiello.gitchain.config.ChainConfig;
@@ -14,6 +15,9 @@ public class Blockchain {
     /* Blocks in blockchain */
     public ArrayList<Block> Blocks;
 
+    /* Blockchain genesis block */
+    public Block GenesisBlock;
+
     /* Chain alloc, configuration */
     public ChainConfig Config;
 
@@ -23,9 +27,14 @@ public class Blockchain {
     /* Network ID */
     public int Network;
 
-    public Blockchain(ChainConfig chainConfig) {
+    /* Network difficulty */
+    public BigInteger TotalDifficulty;
+
+    public Blockchain(ChainConfig chainConfig, Block genesisBlock) {
         this.Config = chainConfig; // Set chain config
         this.ChainID = chainConfig.Chain; // Set chain name
         this.Network = chainConfig.Network; // Set network id
+        this.GenesisBlock = genesisBlock; // Set genesis block
+        this.TotalDifficulty = BigInteger.ZERO; // Set difficulty
     }
 }

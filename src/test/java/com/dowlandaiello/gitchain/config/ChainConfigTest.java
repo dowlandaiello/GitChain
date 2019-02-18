@@ -37,7 +37,7 @@ public class ChainConfigTest {
 
         alloc.put(keyPair.getPublicKey().toString(), 1000000f); // Set alloc
 
-        ChainConfig chainConfig = new ChainConfig(alloc, 0, "test_chain"); // Initialize chain config
+        ChainConfig chainConfig = new ChainConfig(alloc, 0, "test_chain", 10); // Initialize chain config
 
         assertTrue("chain config must not be null", chainConfig != null); // Ensure config not null
     }
@@ -61,7 +61,7 @@ public class ChainConfigTest {
 
         alloc.put(keyPair.getPublicKey().toString(), 1000000f); // Set alloc
 
-        ChainConfig chainConfig = new ChainConfig(alloc, 0, "test_chain"); // Initialize chain config
+        ChainConfig chainConfig = new ChainConfig(alloc, 0, "test_chain", 10); // Initialize chain config
 
         assertTrue("chain config must not be null", chainConfig != null); // Ensure config not null
 
@@ -91,7 +91,7 @@ public class ChainConfigTest {
 
         alloc.put(keyPair.getPublicKey().toString(), 1000000f); // Set alloc
 
-        ChainConfig chainConfig = new ChainConfig(alloc, 0, "test_chain"); // Initialize chain config
+        ChainConfig chainConfig = new ChainConfig(alloc, 0, "test_chain", 10); // Initialize chain config
 
         assertTrue("chain config must not be null", chainConfig != null); // Ensure config not null
 
