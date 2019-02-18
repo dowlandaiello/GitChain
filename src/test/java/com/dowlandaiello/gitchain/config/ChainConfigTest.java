@@ -47,9 +47,27 @@ public class ChainConfigTest {
      */
     @Test
     public void TestReadChainConfig() {
+        ECKeyPair keyPair = null; // Init buffer
+
+        try {
+            keyPair = Keys.createEcKeyPair(); // Generate a new key pair
+        } catch (Exception e) { // Catch
+            fail(e.getLocalizedMessage()); // Panic
+        }
+
         CommonIO.GenesisPath = new File(CommonIO.ConfigPath+"/genesis_test.json").getAbsolutePath(); // Set genesis path
 
-        ChainConfig chainConfig = ChainConfig.ReadChainConfig(); // Read chain config
+        Map<String, Float> alloc = new HashMap<String, Float>(); // Init hash map
+
+        alloc.put(keyPair.getPublicKey().toString(), 1000000f); // Set alloc
+
+        ChainConfig chainConfig = new ChainConfig(alloc, 0, "test_chain"); // Initialize chain config
+
+        assertTrue("chain config must not be null", chainConfig != null); // Ensure config not null
+
+        assertTrue("must write successfully", chainConfig.WriteChainConfig()); // Ensure success
+
+        chainConfig = ChainConfig.ReadChainConfig(); // Read chain config
 
         assertTrue("chain config must not be null", chainConfig != null); // Ensure config not null
     }
