@@ -1,6 +1,7 @@
 package com.dowlandaiello.gitchain.types;
 
 import java.io.Serializable;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 
 import com.dowlandaiello.gitchain.common.CommonIO;
@@ -39,6 +40,9 @@ public class Block implements Serializable {
     /* Block hash */
     public byte[] Hash;
 
+    /* Block timestamp */
+    public Timestamp timestamp;
+
     /**
      * Initialize a new block with a transaction set, transactions.
      * 
@@ -56,6 +60,7 @@ public class Block implements Serializable {
         this.Difficulty = difficulty; // Set difficulty
         this.Nonce = nonce; // Set nonce
         this.Hash = Sha.Sha3(this.Bytes()); // Set hash
+        this.timestamp = new Timestamp(System.currentTimeMillis()); // Get timestamp
     }
 
     /**
