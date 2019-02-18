@@ -10,9 +10,9 @@ import java.util.ArrayList;
  */
 public class Blockchain {
     /* Blocks in blockchain */
-    ArrayList<Block> blocks;
+    public ArrayList<Block> Blocks;
 
     public Blockchain() {
-        
+
     }
 }
