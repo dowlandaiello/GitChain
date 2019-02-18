@@ -31,3 +31,6 @@ target/
 .project
 .classpath
 bin/
+
+# Test data
+data/config/genesis_test.json
