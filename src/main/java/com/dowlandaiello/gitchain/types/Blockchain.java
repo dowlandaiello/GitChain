@@ -76,7 +76,7 @@ public class Blockchain {
             transactions,
             parent.Hash,
             CommonCoin.MinerCoinbase,
-            CalculateDifficulty(parent, time, nonce, Config.BlockInterval),
+            CalculateDifficulty(parent, time, this.Blocks.size(), Config.BlockInterval),
             nonce
         ); // Return initialized block
     }
@@ -137,12 +137,7 @@ public class Blockchain {
      * @param parent working block to calculate from
      * @return calculated difficulty
      */
-    public static float CalculateDifficulty(Block parent, long blockTime, long blockNonce, int blockInterval) {
-        int multiplier = 1; // Init buffer
-
-        if (blockTime - parent.Timestamp >= blockInterval) // Check insufficient
-            multiplier = -1; // Set buffer
-
-        return (float) (parent.Difficulty + parent.Difficulty / 2048 * multiplier + Math.pow(2, ((blockNonce / 100000) - 2))); // Return calculated
+    public static float CalculateDifficulty(Block parent, long blockTime, long blockNumber, int blockInterval) {
+        return (float) parent.Difficulty + parent.Difficulty / 2048 * (float) Math.max(1 - (blockTime - parent.Timestamp) / 10, -99) + (float) Math.pow(2, ((blockNumber / 100000) - 2)); // Return calculated difficulty
     }
 }
