@@ -33,7 +33,7 @@ public class Block implements Serializable {
     /* Chain difficulty at block */
     public Float Difficulty;
 
-    /* Block index in chain */
+    /* Block pow nonce */
     public long Nonce;
 
     /* Block hash */

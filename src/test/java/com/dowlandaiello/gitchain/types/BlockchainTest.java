@@ -75,7 +75,7 @@ public class BlockchainTest {
         assertTrue("genesis block must not be null", blockchain.GenesisBlock != null); // Ensure genesis not null
         assertTrue("genesis block in blocks must not be null", blockchain.Blocks.get(0) != null); // Ensure genesis not null
 
-        Block newBlock = blockchain.CreateNewBlock(blockchain.GenesisBlock, new Transaction[0]); // Generate new block
+        Block newBlock = blockchain.CreateNewBlock(blockchain.GenesisBlock, new Transaction[0], 0); // Generate new block
 
         assertTrue("block must not be null", newBlock != null); // Ensure block not null
         assertTrue("block difficulty must be greater than genesis", newBlock.Difficulty > blockchain.GenesisBlock.Difficulty); // Ensure difficulty not null

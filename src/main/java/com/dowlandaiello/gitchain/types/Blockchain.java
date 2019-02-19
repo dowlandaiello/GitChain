@@ -61,7 +61,7 @@ public class Blockchain {
      * @param transactions transactions to put in block (usually from mempool)
      * @return generated block
      */
-    public Block CreateNewBlock(Block parent, Transaction[] transactions) {
+    public Block CreateNewBlock(Block parent, Transaction[] transactions, long nonce) {
         long time = System.currentTimeMillis() / 1000; // Get block time
 
         if (parent.Timestamp >= time) time = parent.Timestamp + 1; // Adjust time to parent block
@@ -70,8 +70,8 @@ public class Blockchain {
             transactions,
             parent.Hash,
             CommonCoin.MinerCoinbase,
-            CalculateDifficulty(parent, time, this.Blocks.size(), Config.BlockInterval),
-            this.Blocks.size()
+            CalculateDifficulty(parent, time, nonce, Config.BlockInterval),
+            nonce
         ); // Return initialized block
     }
 
