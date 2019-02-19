@@ -10,7 +10,6 @@ import java.util.Map;
 import com.dowlandaiello.gitchain.config.ChainConfig;
 import com.dowlandaiello.gitchain.crypto.Sha;
 
-import org.apache.commons.codec.binary.Hex;
 import org.junit.Test;
 import org.web3j.crypto.ECKeyPair;
 import org.web3j.crypto.Keys;
@@ -89,8 +88,6 @@ public class BlockchainTest {
             newBlock.Nonce++; // Increment nonce
             newBlock.Timestamp = System.currentTimeMillis() / 1000; // Set timestamp
             newBlock.Difficulty = Blockchain.CalculateDifficulty(blockchain.GenesisBlock, newBlock.Timestamp, newBlock.Nonce, chainConfig.BlockInterval); // Set difficulty
-
-            // System.out.println(newBlock.Difficulty);
         }
 
         newBlock.Hash = Sha.Sha3(newBlock.BytesHashSafe()); // Hash
