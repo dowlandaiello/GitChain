@@ -8,7 +8,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.dowlandaiello.gitchain.config.ChainConfig;
+import com.dowlandaiello.gitchain.crypto.Sha;
 
+import org.apache.commons.codec.binary.Hex;
 import org.junit.Test;
 import org.web3j.crypto.ECKeyPair;
 import org.web3j.crypto.Keys;
@@ -76,8 +78,21 @@ public class BlockchainTest {
         assertTrue("genesis block in blocks must not be null", blockchain.Blocks.get(0) != null); // Ensure genesis not null
 
         Block newBlock = blockchain.CreateNewBlock(blockchain.GenesisBlock, new Transaction[0], 0); // Generate new block
+        newBlock.Difficulty = Blockchain.CalculateDifficulty(blockchain.GenesisBlock, newBlock.Timestamp, newBlock.Nonce, chainConfig.BlockInterval); // Set difficulty
 
         assertTrue("block must not be null", newBlock != null); // Ensure block not null
         assertTrue("block difficulty must be greater than genesis", newBlock.Difficulty > blockchain.GenesisBlock.Difficulty); // Ensure difficulty not null
+
+        while (Hex.encodeHex(newBlock.Hash)[Math.round(newBlock.Difficulty)] != new String("0").charAt(0)) { // Check invalid hash
+            newBlock.Nonce++; // Increment nonce
+            newBlock.Timestamp = System.currentTimeMillis() / 1000; // Set timestamp
+            newBlock.Hash = Sha.Sha3(newBlock.Bytes()); // Hash
+            newBlock.Difficulty = Blockchain.CalculateDifficulty(blockchain.GenesisBlock, newBlock.Timestamp, newBlock.Nonce, chainConfig.BlockInterval); // Set difficulty
+            System.out.println(Math.round(newBlock.Difficulty));
+        }
+
+        System.out.println(Hex.encodeHexString(newBlock.Hash)); // Log success
+        System.out.println(blockchain.GenesisBlock.Timestamp);
+        System.out.println(newBlock.Timestamp);
     }
 }
