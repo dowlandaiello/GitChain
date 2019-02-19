@@ -67,11 +67,13 @@ public class BlockchainTest {
 
         alloc.put(keyPair.getPublicKey(), 1000000f); // Set alloc
 
-        ChainConfig chainConfig = new ChainConfig(alloc, 0, "test_chain", 13, 1f); // Initialize chain config
+        ChainConfig chainConfig = new ChainConfig(alloc, 0, "test_chain", 13, 255f); // Initialize chain config
 
         assertTrue("chain config must not be null", chainConfig != null); // Ensure config not null
 
         Blockchain blockchain = new Blockchain(chainConfig); // Make new blockchain
+
+        System.out.println(System.currentTimeMillis() / 1000); // Log start time
 
         assertTrue("blockchain must not be null", blockchain != null); // Ensure chain not null
         assertTrue("genesis block must not be null", blockchain.GenesisBlock != null); // Ensure genesis not null
@@ -83,13 +85,16 @@ public class BlockchainTest {
         assertTrue("block must not be null", newBlock != null); // Ensure block not null
         assertTrue("block difficulty must be greater than genesis", newBlock.Difficulty > blockchain.GenesisBlock.Difficulty); // Ensure difficulty not null
 
-        while (!Blockchain.VerifyBlockHash(newBlock)) { // Check invalid hash
+        while (!Blockchain.VerifyBlockNonce(newBlock)) { // Check invalid hash
             newBlock.Nonce++; // Increment nonce
             newBlock.Timestamp = System.currentTimeMillis() / 1000; // Set timestamp
             newBlock.Difficulty = Blockchain.CalculateDifficulty(blockchain.GenesisBlock, newBlock.Timestamp, newBlock.Nonce, chainConfig.BlockInterval); // Set difficulty
-            newBlock.Hash = Sha.Sha3(newBlock.Bytes()); // Hash
+
+            // System.out.println(newBlock.Difficulty);
         }
 
-        System.out.println(Hex.encodeHexString(newBlock.Hash)); // Log success
+        newBlock.Hash = Sha.Sha3(newBlock.BytesHashSafe()); // Hash
+
+        System.out.println(System.currentTimeMillis() / 1000); // Log finish time
     }
 }
