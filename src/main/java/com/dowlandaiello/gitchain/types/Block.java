@@ -58,17 +58,50 @@ public class Block implements Serializable {
         this.Coinbase = coinbase; // Set coinbase
         this.Difficulty = difficulty; // Set difficulty
         this.Nonce = nonce; // Set nonce
-        this.Hash = Sha.Sha3(this.Bytes()); // Set hash
         this.Timestamp = System.currentTimeMillis() / 1000; // Get timestamp
     }
 
     /**
-     * Serialize block to byte array/
+     * Serialize block to byte array
      * 
      * @return byte serialized block
      */
     public byte[] Bytes() {
         return(SerializationUtils.serialize(this)); // Serialize
+    }
+
+    /**
+     * Serialize block to byte array, ommitting the block hash
+     */
+    public byte[] BytesHashSafe() {
+        byte[] oldHash = this.Hash; // Store hash
+
+        this.Hash = new byte[0]; // Set hash
+
+        byte[] bytes = this.Bytes(); // Store safe bytes
+
+        this.Hash = oldHash; // Reset hash
+
+        return bytes; // Return safe bytes
+    }
+
+    /**
+     * Serialize block to byte array, ommitting the block nonce and block hash
+     * @return
+     */
+    public byte[] BytesWithoutNonce() {
+        byte[] oldHash = this.Hash; // Store hash
+        long nonce = this.Nonce; // Store nonce
+
+        this.Hash = new byte[0]; // Set hash
+        this.Nonce = 0l; // Set nonce
+
+        byte[] bytes = this.Bytes(); // Store safe bytes
+
+        this.Hash = oldHash; // Reset hash
+        this.Nonce = nonce; // Set nonce
+
+        return bytes; // Return safe bytes
     }
 
     /**
