@@ -3,7 +3,6 @@ package com.dowlandaiello.gitchain.types;
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -12,6 +11,8 @@ import com.dowlandaiello.gitchain.common.CommonCoin;
 import com.dowlandaiello.gitchain.config.ChainConfig;
 import com.dowlandaiello.gitchain.crypto.Sha;
 
+import org.apache.commons.codec.binary.Hex;
+import org.bouncycastle.util.Arrays;
 import org.bouncycastle.util.BigIntegers;
 
 /**
@@ -113,20 +114,22 @@ public class Blockchain {
     }
 
     /**
-     * Verify block difficulty matches current block hash.
+     * Verify block difficulty matches current block nonce.
      * 
      * @param block block to check
      * @return validity of block hash
      */
-    public static boolean VerifyBlockHash(Block block) {
-        if (!Arrays.equals(block.Hash, Sha.Sha3(block.BytesHashSafe()))) { // Check invalid hash
-            return false; // Invalid hash
-        }
-
+    public static boolean VerifyBlockNonce(Block block) {
         BigInteger max = BigInteger.valueOf(2).pow(255); // Get max difficulty
-        byte[] target = BigIntegers.asUnsignedByteArray(32, max.divide(new BigInteger(1, ByteBuffer.allocate(4).putFloat(block.Difficulty).array()))); // Calculate target difficulty hash
+        byte[] target = BigIntegers.asUnsignedByteArray(32, max.divide(new BigInteger(1, Integer.toHexString((int) Math.floor(block.Difficulty)).getBytes()))); // Calculate target difficulty hash
 
-        return (CommonByteCmp.compareTo(block.Hash, 0, 32, target, 0, 32) < 0);
+        byte[] blockHash = Sha.Sha3(block.BytesWithoutNonce()); // Get block hash
+
+        byte[] concatenated = Arrays.concatenate(blockHash, ByteBuffer.allocate(4).putFloat(block.Nonce).array()); // Get concatenated
+
+        byte[] hash = Sha.Sha3(concatenated); // Calculate hash
+
+        return (CommonByteCmp.compareTo(hash, 0, 32, target, 0, 32) < 0);
     }
 
     /**
