@@ -2,6 +2,7 @@ package com.dowlandaiello.gitchain.types;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -116,7 +117,7 @@ public class Blockchain {
      * @return validity of block hash
      */
     public static boolean VerifyBlockHash(Block block) {
-        if (block.Hash != Sha.Sha3(block.Bytes())) { // Check invalid hash
+        if (!Arrays.equals(block.Hash, Sha.Sha3(block.Bytes()))) { // Check invalid hash
             return false; // Invalid hash
         }
 
