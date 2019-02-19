@@ -11,7 +11,6 @@ import com.dowlandaiello.gitchain.common.CommonCoin;
 import com.dowlandaiello.gitchain.config.ChainConfig;
 import com.dowlandaiello.gitchain.crypto.Sha;
 
-import org.apache.commons.codec.binary.Hex;
 import org.bouncycastle.util.Arrays;
 import org.bouncycastle.util.BigIntegers;
 
