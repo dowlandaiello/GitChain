@@ -1,16 +1,18 @@
 package com.dowlandaiello.gitchain.types;
 
 import java.math.BigInteger;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import com.dowlandaiello.gitchain.common.CommonByteCmp;
 import com.dowlandaiello.gitchain.common.CommonCoin;
 import com.dowlandaiello.gitchain.config.ChainConfig;
 import com.dowlandaiello.gitchain.crypto.Sha;
 
-import org.apache.commons.codec.binary.Hex;
+import org.bouncycastle.util.BigIntegers;
 
 /**
  * Blockchain is a data type containing a list of blocks, a genesis block, and consensus metadata.
@@ -117,21 +119,14 @@ public class Blockchain {
      * @return validity of block hash
      */
     public static boolean VerifyBlockHash(Block block) {
-        if (!Arrays.equals(block.Hash, Sha.Sha3(block.Bytes()))) { // Check invalid hash
+        if (!Arrays.equals(block.Hash, Sha.Sha3(block.BytesHashSafe()))) { // Check invalid hash
             return false; // Invalid hash
         }
 
-        int occurrences = 0; // Set occurrences
+        BigInteger max = BigInteger.valueOf(2).pow(255); // Get max difficulty
+        byte[] target = BigIntegers.asUnsignedByteArray(32, max.divide(new BigInteger(1, ByteBuffer.allocate(4).putFloat(block.Difficulty).array()))); // Calculate target difficulty hash
 
-        for (int i = 0; i < Hex.encodeHexString(block.Hash).length(); i++) { // Iterate through values
-            if (Hex.encodeHexString(block.Hash).charAt(i) == '0') { // Check valid
-                occurrences++; // Increment
-            } else {
-                break; // Break
-            }
-        }
-
-        return occurrences == Math.floor(block.Difficulty); // Return valid
+        return (CommonByteCmp.compareTo(block.Hash, 0, 32, target, 0, 32) < 0);
     }
 
     /**
