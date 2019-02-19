@@ -83,16 +83,13 @@ public class BlockchainTest {
         assertTrue("block must not be null", newBlock != null); // Ensure block not null
         assertTrue("block difficulty must be greater than genesis", newBlock.Difficulty > blockchain.GenesisBlock.Difficulty); // Ensure difficulty not null
 
-        while (Hex.encodeHex(newBlock.Hash)[Math.round(newBlock.Difficulty)] != new String("0").charAt(0)) { // Check invalid hash
+        while (!Blockchain.VerifyBlockHash(newBlock)) { // Check invalid hash
             newBlock.Nonce++; // Increment nonce
             newBlock.Timestamp = System.currentTimeMillis() / 1000; // Set timestamp
-            newBlock.Hash = Sha.Sha3(newBlock.Bytes()); // Hash
             newBlock.Difficulty = Blockchain.CalculateDifficulty(blockchain.GenesisBlock, newBlock.Timestamp, newBlock.Nonce, chainConfig.BlockInterval); // Set difficulty
-            System.out.println(Math.round(newBlock.Difficulty));
+            newBlock.Hash = Sha.Sha3(newBlock.Bytes()); // Hash
         }
 
         System.out.println(Hex.encodeHexString(newBlock.Hash)); // Log success
-        System.out.println(blockchain.GenesisBlock.Timestamp);
-        System.out.println(newBlock.Timestamp);
     }
 }

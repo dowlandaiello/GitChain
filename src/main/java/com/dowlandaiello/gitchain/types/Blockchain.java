@@ -7,6 +7,9 @@ import java.util.Map.Entry;
 
 import com.dowlandaiello.gitchain.common.CommonCoin;
 import com.dowlandaiello.gitchain.config.ChainConfig;
+import com.dowlandaiello.gitchain.crypto.Sha;
+
+import org.apache.commons.codec.binary.Hex;
 
 /**
  * Blockchain is a data type containing a list of blocks, a genesis block, and consensus metadata.
@@ -104,6 +107,30 @@ public class Blockchain {
             chainConfig.Difficulty,
             0
         ); // Return block
+    }
+
+    /**
+     * Verify block difficulty matches current block hash.
+     * 
+     * @param block block to check
+     * @return validity of block hash
+     */
+    public static boolean VerifyBlockHash(Block block) {
+        if (block.Hash != Sha.Sha3(block.Bytes())) { // Check invalid hash
+            return false; // Invalid hash
+        }
+
+        int occurrences = 0; // Set occurrences
+
+        for (int i = 0; i < Hex.encodeHexString(block.Hash).length(); i++) { // Iterate through values
+            if (Hex.encodeHexString(block.Hash).charAt(i) == '0') { // Check valid
+                occurrences++; // Increment
+            } else {
+                break; // Break
+            }
+        }
+
+        return occurrences == Math.floor(block.Difficulty); // Return valid
     }
 
     /**
