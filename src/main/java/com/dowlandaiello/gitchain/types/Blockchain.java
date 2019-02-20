@@ -104,13 +104,17 @@ public class Blockchain {
             x++; // Iterate
         }
 
-        return new Block(
-            transactions,
-            new byte[0],
-            CommonCoin.MinerCoinbase,
-            chainConfig.Difficulty,
-            0
-        ); // Return block
+        Block genesisBlock = new Block(transactions, new byte[0], CommonCoin.MinerCoinbase, chainConfig.Difficulty, 0); // Create block
+
+        while (!Blockchain.VerifyBlockNonce(genesisBlock)) { // Calculate nonce
+            genesisBlock.Nonce++; // Increment nonce
+            genesisBlock.Timestamp = System.currentTimeMillis() / 1000; // Set timestamp
+            genesisBlock.Difficulty = Blockchain.CalculateDifficulty(genesisBlock, genesisBlock.Timestamp); // Set difficulty
+        }
+
+        genesisBlock.Hash = Sha.Sha3(genesisBlock.Bytes()); // Hash
+
+        return genesisBlock; // Return initialized genesis block
     }
 
     /**
@@ -120,8 +124,10 @@ public class Blockchain {
      * @return validity of block hash
      */
     public static boolean VerifyBlockNonce(Block block) {
+        if (Float.isFinite(block.Difficulty)) throw new RuntimeException("block difficulty overflow--block difficulty is infinite"); // Panic
+
         BigInteger max = BigInteger.valueOf(2).pow(255); // Get max difficulty
-        byte[] target = BigIntegers.asUnsignedByteArray(32, max.divide(new BigInteger(1, Integer.toHexString((int) Math.floor(block.Difficulty)).getBytes()))); // Calculate target difficulty hash
+        byte[] target = BigIntegers.asUnsignedByteArray(32, max.divide(new BigInteger(1, Long.toHexString(block.Difficulty.longValue()).getBytes()))); // Calculate target difficulty hash
 
         byte[] blockHash = Sha.Sha3(block.BytesWithoutNonce()); // Get block hash
 
