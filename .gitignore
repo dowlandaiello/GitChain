@@ -34,3 +34,6 @@ bin/
 
 # Test data
 data/config/genesis_test.json
+
+# DB
+data/
