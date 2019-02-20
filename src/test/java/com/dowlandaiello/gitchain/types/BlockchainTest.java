@@ -79,7 +79,7 @@ public class BlockchainTest {
         assertTrue("genesis block in blocks must not be null", blockchain.Blocks.get(0) != null); // Ensure genesis not null
 
         Block newBlock = blockchain.CreateNewBlock(blockchain.GenesisBlock, new Transaction[0], 0); // Generate new block
-        newBlock.Difficulty = Blockchain.CalculateDifficulty(blockchain.GenesisBlock, newBlock.Timestamp, newBlock.Nonce, chainConfig.BlockInterval); // Set difficulty
+        newBlock.Difficulty = Blockchain.CalculateDifficulty(blockchain.GenesisBlock, newBlock.Timestamp); // Set difficulty
 
         assertTrue("block must not be null", newBlock != null); // Ensure block not null
         assertTrue("block difficulty must be greater than genesis", newBlock.Difficulty > blockchain.GenesisBlock.Difficulty); // Ensure difficulty not null
@@ -87,10 +87,25 @@ public class BlockchainTest {
         while (!Blockchain.VerifyBlockNonce(newBlock)) { // Check invalid hash
             newBlock.Nonce++; // Increment nonce
             newBlock.Timestamp = System.currentTimeMillis() / 1000; // Set timestamp
-            newBlock.Difficulty = Blockchain.CalculateDifficulty(blockchain.GenesisBlock, newBlock.Timestamp, newBlock.Nonce, chainConfig.BlockInterval); // Set difficulty
+            newBlock.Difficulty = Blockchain.CalculateDifficulty(blockchain.GenesisBlock, newBlock.Timestamp); // Set difficulty
         }
 
+        System.out.println(newBlock.Difficulty);
+
         newBlock.Hash = Sha.Sha3(newBlock.BytesHashSafe()); // Hash
+
+        System.out.println(System.currentTimeMillis() / 1000); // Log finish time
+
+        Block secondBlock = blockchain.CreateNewBlock(newBlock, new Transaction[0], 0); // Generate new block
+        secondBlock.Difficulty = Blockchain.CalculateDifficulty(newBlock, secondBlock.Timestamp); // Set difficulty
+
+        while (!Blockchain.VerifyBlockNonce(secondBlock)) { // Check invalid hash
+            secondBlock.Nonce++; // Increment nonce
+            secondBlock.Timestamp = System.currentTimeMillis() / 1000; // Set timestamp
+            secondBlock.Difficulty = Blockchain.CalculateDifficulty(newBlock, secondBlock.Timestamp); // Set difficulty
+        }
+
+        secondBlock.Hash = Sha.Sha3(secondBlock.BytesHashSafe()); // Hash
 
         System.out.println(System.currentTimeMillis() / 1000); // Log finish time
     }
