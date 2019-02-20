@@ -1,19 +1,25 @@
 package com.dowlandaiello.gitchain.types;
 
+import java.io.File;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import com.dowlandaiello.gitchain.common.CommonByteCmp;
 import com.dowlandaiello.gitchain.common.CommonCoin;
+import com.dowlandaiello.gitchain.common.CommonIO;
 import com.dowlandaiello.gitchain.config.ChainConfig;
 import com.dowlandaiello.gitchain.crypto.Sha;
 
 import org.bouncycastle.util.Arrays;
 import org.bouncycastle.util.BigIntegers;
+
+import org.iq80.leveldb.*;
+
+import static org.iq80.leveldb.impl.Iq80DBFactory.*;
 
 /**
  * Blockchain is a data type containing a list of blocks, a genesis block, and consensus metadata.
@@ -23,7 +29,7 @@ import org.bouncycastle.util.BigIntegers;
  */
 public class Blockchain {
     /* Blocks in blockchain */
-    public ArrayList<Block> Blocks;
+    public DB BlockDB;
 
     /* Blockchain genesis block */
     public Block GenesisBlock;
@@ -53,14 +59,49 @@ public class Blockchain {
             genesisBlock.Difficulty = 1f; // Set difficulty
         }
 
+        Options options = new Options(); // Make DB options
+        options.createIfMissing(true); // Set options
+
         this.Config = chainConfig; // Set chain config
         this.ChainID = chainConfig.Chain; // Set chain name
         this.Network = chainConfig.Network; // Set network id
         this.GenesisBlock = genesisBlock; // Set genesis block
         this.TotalDifficulty = genesisBlock.Difficulty; // Set difficulty
         this.GenesisBlock = genesisBlock; // Set genesis
-        this.Blocks = new ArrayList<Block>(); // Construct block list
-        this.Blocks.add(genesisBlock); // Add genesis reeReeReeReeRee
+
+        try {
+            this.BlockDB = factory.open(new File(CommonIO.DataPath + "/" + chainConfig.Chain), options); // Construct DB
+
+            this.BlockDB.put(genesisBlock.Hash, genesisBlock.Bytes()); // Add genesis reeReeReeReeRee
+            this.BlockDB.close(); // Close db
+        } catch (IOException e) {
+            throw new RuntimeException(e); // Panic
+        }
+    }
+
+    /**
+     * Open blockchain block database.
+     */
+    public void OpenBlockDB() {
+        try {
+            Options options = new Options(); // Make DB options
+            options.createIfMissing(true); // Set options
+
+            this.BlockDB = factory.open(new File(CommonIO.DataPath + "/" + this.Config.Chain), options); // Open DB
+        } catch (IOException e) {
+            throw new RuntimeException(e); // Panic
+        }
+    }
+
+    /**
+     * Close blockchain block database.
+     */
+    public void CloseBlockDB() {
+        try {
+            this.BlockDB.close(); // Close db
+        } catch (IOException e) {
+            throw new RuntimeException(e); // Panic
+        }
     }
 
     /**
