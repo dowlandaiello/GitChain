@@ -70,7 +70,7 @@ public class Blockchain {
         this.GenesisBlock = genesisBlock; // Set genesis
 
         try {
-            this.BlockDB = factory.open(new File(CommonIO.DataPath + "/" + chainConfig.Chain), options); // Construct DB
+            this.BlockDB = factory.open(new File(CommonIO.DbPath + "/" + chainConfig.Chain), options); // Construct DB
 
             this.BlockDB.put(genesisBlock.Hash, genesisBlock.Bytes()); // Add genesis reeReeReeReeRee
             this.BlockDB.close(); // Close db
@@ -87,7 +87,7 @@ public class Blockchain {
             Options options = new Options(); // Make DB options
             options.createIfMissing(true); // Set options
 
-            this.BlockDB = factory.open(new File(CommonIO.DataPath + "/" + this.Config.Chain), options); // Open DB
+            this.BlockDB = factory.open(new File(CommonIO.DbPath + "/" + this.Config.Chain), options); // Open DB
         } catch (IOException e) {
             throw new RuntimeException(e); // Panic
         }
