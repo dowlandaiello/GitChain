@@ -128,7 +128,8 @@ public class BlockchainTest {
             lastBlock = newBlock; // Set last block
         }
 
-        blockchain.CloseBlockDB(); // Close db
+        assertTrue("must write successfully", blockchain.WriteToMemory()); // Write blockchain to memory
+        assertTrue("must close successfully", blockchain.CloseBlockDB()); // Close db
 
         System.out.println("\nfinished making " + numBlocks + " blocks with an average difficulty of " + totalDifficulty / numBlocks + ", an average nonce of "+ totalNonce / numBlocks +", and an average block time of "+ totalBlockTime / numBlocks +" in " + (System.currentTimeMillis() / 1000 - blockchain.GenesisBlock.Timestamp) +" seconds."); // Log test finished
     }

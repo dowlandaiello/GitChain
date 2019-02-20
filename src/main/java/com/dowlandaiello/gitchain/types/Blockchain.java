@@ -135,7 +135,7 @@ public class Blockchain {
             return false; // Failed
         }
 
-        return this.WriteToMemory(); // Write db header
+        return true; // Success
     }
 
     /**
