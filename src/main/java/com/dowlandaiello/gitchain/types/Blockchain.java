@@ -76,7 +76,7 @@ public class Blockchain {
             transactions,
             parent.Hash,
             CommonCoin.MinerCoinbase,
-            CalculateDifficulty(parent, time, this.Blocks.size(), Config.BlockInterval),
+            CalculateDifficulty(parent, time),
             nonce
         ); // Return initialized block
     }
@@ -137,7 +137,20 @@ public class Blockchain {
      * @param parent working block to calculate from
      * @return calculated difficulty
      */
-    public static float CalculateDifficulty(Block parent, long blockTime, long blockNumber, int blockInterval) {
-        return (float) parent.Difficulty + parent.Difficulty / 2048 * (float) Math.max(1 - (blockTime - parent.Timestamp) / 10, -99) + (float) Math.pow(2, ((blockNumber / 100000) - 2)); // Return calculated difficulty
+    public static float CalculateDifficulty(Block parent, long blockTime) {
+        BigInteger x = BigInteger.valueOf(0l); // Init x
+        BigInteger y = BigInteger.valueOf(0l); // Init y
+
+        x = BigInteger.valueOf(Math.round(blockTime - parent.Timestamp)); // Calculate block time difference
+        x = x.divide(BigInteger.valueOf(10l)); // Weird mem allocations
+        x = BigInteger.valueOf(1l).subtract(x); // More weird mem allocations
+
+        if (x.compareTo(BigInteger.valueOf(-99l)) < 0) x = BigInteger.valueOf(-99l); // max(1 - (block_timestamp - parent_timestamp) // 10, -99)
+
+        y = BigInteger.valueOf((long) (parent.Difficulty / 2048)); // parent_diff // 2048
+        x = y.multiply(x); // Multiply
+        x = x.add(BigInteger.valueOf(Math.round(parent.Difficulty))); // Add parent_diff
+
+        return x.floatValue(); // Return calculated difficulty
     }
 }
