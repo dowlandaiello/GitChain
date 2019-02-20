@@ -24,6 +24,9 @@ public class CommonIO {
     /* Default data path */
     public static String DataPath = new File("data").getAbsolutePath();
 
+    /* Default db path */
+    public static String DbPath = new File(DataPath+"/db").getAbsolutePath();
+
     /* Default config path */
     public static String ConfigPath = new File(DataPath+"/config").getAbsolutePath();
 
