@@ -1,5 +1,6 @@
 package com.dowlandaiello.gitchain.types;
 
+import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
@@ -139,7 +140,7 @@ public class Blockchain {
      */
     public static float CalculateDifficulty(Block parent, long blockTime) {
         BigInteger x = BigInteger.valueOf(0l); // Init x
-        BigInteger y = BigInteger.valueOf(0l); // Init y
+        BigDecimal y = BigDecimal.valueOf(0l); // Init y
 
         x = BigInteger.valueOf(Math.round(blockTime - parent.Timestamp)); // Calculate block time difference
         x = x.divide(BigInteger.valueOf(10l)); // Weird mem allocations
@@ -147,10 +148,11 @@ public class Blockchain {
 
         if (x.compareTo(BigInteger.valueOf(-99l)) < 0) x = BigInteger.valueOf(-99l); // max(1 - (block_timestamp - parent_timestamp) // 10, -99)
 
-        y = BigInteger.valueOf((long) (parent.Difficulty / 2048)); // parent_diff // 2048
-        x = y.multiply(x); // Multiply
-        x = x.add(BigInteger.valueOf(Math.round(parent.Difficulty))); // Add parent_diff
+        y = BigDecimal.valueOf(parent.Difficulty / 2048); // parent_diff // 2048
+        
+        BigDecimal finalX = y.multiply(BigDecimal.valueOf(x.floatValue())); // Multiply
+        finalX = finalX.add(BigDecimal.valueOf(parent.Difficulty)); // Add parent_diff
 
-        return x.floatValue(); // Return calculated difficulty
+        return finalX.floatValue(); // Return calculated difficulty
     }
 }
