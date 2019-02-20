@@ -70,7 +70,7 @@ public class BlockchainTest {
 
         assertTrue("chain config must not be null", chainConfig != null); // Ensure config not null
 
-        System.out.println(System.currentTimeMillis() / 1000 + ": making genesis block (this shouldn't take more than 20 seconds)...\n"); // Log gen time
+        System.out.println(System.currentTimeMillis() / 1000 + ": making genesis block (this shouldn't take more than 25 seconds)...\n"); // Log gen time
 
         Blockchain blockchain = new Blockchain(chainConfig); // Make new blockchain
 
