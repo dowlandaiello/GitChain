@@ -1,10 +1,12 @@
 package com.dowlandaiello.gitchain.types;
 
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
+import java.nio.file.Files;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -13,6 +15,8 @@ import com.dowlandaiello.gitchain.common.CommonCoin;
 import com.dowlandaiello.gitchain.common.CommonIO;
 import com.dowlandaiello.gitchain.config.ChainConfig;
 import com.dowlandaiello.gitchain.crypto.Sha;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 import org.bouncycastle.util.Arrays;
 import org.bouncycastle.util.BigIntegers;
@@ -70,6 +74,8 @@ public class Blockchain {
         this.GenesisBlock = genesisBlock; // Set genesis
 
         try {
+            CommonIO.MakeDirIfNotExist(CommonIO.DataPath); // Make data path
+
             this.BlockDB = factory.open(new File(CommonIO.DbPath + "/" + chainConfig.Chain), options); // Construct DB
 
             this.BlockDB.put(genesisBlock.Hash, genesisBlock.Bytes()); // Add genesis reeReeReeReeRee
@@ -80,28 +86,56 @@ public class Blockchain {
     }
 
     /**
+     * Deserialize blockchain from given byte array, rawJSON.
+     * @param rawJSON json to deserialize
+     */
+    public Blockchain(byte[] rawJSON) {
+        Gson gson = new GsonBuilder().setPrettyPrinting().create(); // Init gson
+
+        Blockchain blockchain = gson.fromJson(new String(rawJSON), Blockchain.class);
+
+        this.GenesisBlock = blockchain.GenesisBlock; // Set genesis block
+        this.Config = blockchain.Config; // Set config
+        this.ChainID = blockchain.ChainID; // Set chain ID
+        this.Network = blockchain.Network; // Set network
+        this.TotalDifficulty = blockchain.TotalDifficulty; // Set total difficulty
+    }
+
+    /**
      * Open blockchain block database.
      */
-    public void OpenBlockDB() {
+    public boolean OpenBlockDB() {
         try {
             Options options = new Options(); // Make DB options
             options.createIfMissing(true); // Set options
 
             this.BlockDB = factory.open(new File(CommonIO.DbPath + "/" + this.Config.Chain), options); // Open DB
         } catch (IOException e) {
-            throw new RuntimeException(e); // Panic
+            if (!CommonIO.StdoutSilenced) { // Check can print
+                e.printStackTrace(); // Log stack trace
+            }
+
+            return false; // Failed
         }
+
+        return true; // Success
     }
 
     /**
      * Close blockchain block database.
      */
-    public void CloseBlockDB() {
+    public boolean CloseBlockDB() {
         try {
             this.BlockDB.close(); // Close db
         } catch (IOException e) {
-            throw new RuntimeException(e); // Panic
+            if (!CommonIO.StdoutSilenced) { // Check can print
+                e.printStackTrace(); // Log stack trace
+            }
+
+            return false; // Failed
         }
+
+        return this.WriteToMemory(); // Write db header
     }
 
     /**
@@ -125,6 +159,66 @@ public class Blockchain {
             CalculateDifficulty(parent, time),
             nonce
         ); // Return initialized block
+    }
+
+    /**
+     * Read blockchain from persistent memory.
+     * 
+     * @return read blockchain
+     */
+    public static Blockchain ReadFromMemory(String chain) {
+        File dbHeaderFile = new File(CommonIO.DbPath + "/" + chain + "/db_header.json"); // Init file
+
+        byte[] rawJSON = null; // Declare buffer
+
+        try {
+            rawJSON = Files.readAllBytes(dbHeaderFile.toPath());
+        } catch (IOException e) { // Catch
+            if (!CommonIO.StdoutSilenced) { // Check can print
+                e.printStackTrace(); // Log stack trace
+            }
+        }
+
+        return new Blockchain(rawJSON); // init blockchain
+    }
+
+    /**
+     * Write blockchain db header to persistent memory.
+     * 
+     * @return whether the operation was successful
+     */
+    public boolean WriteToMemory() {
+        try {
+            this.BlockDB.close(); // Close block db
+
+            this.BlockDB = null; // Reset block db
+        } catch (IOException e) {
+            if (!CommonIO.StdoutSilenced) { // Check can print
+                e.printStackTrace(); // Print stack trace
+            }
+        }
+
+        Gson gson = new GsonBuilder().setPrettyPrinting().create(); // Init gson
+
+        CommonIO.MakeDirIfNotExist(CommonIO.DbPath + "/" + this.Config.Chain); // Make db header path
+
+        try {
+            FileWriter writer = new FileWriter(CommonIO.DbPath + "/" + this.Config.Chain + "/db_header.json"); // Init writer
+
+            gson.toJson(this, writer); // Write gson
+
+            writer.close(); // Close writer
+        } catch (IOException e) { // Catch
+            if (!CommonIO.StdoutSilenced) { // Check can print
+                e.printStackTrace(); // Log stack trace
+
+                return false; // Failed
+            }
+        }
+
+        this.OpenBlockDB(); // Open block db
+
+        return true; // Success
     }
 
     /**
