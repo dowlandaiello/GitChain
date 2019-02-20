@@ -10,6 +10,7 @@ import java.util.Map;
 import com.dowlandaiello.gitchain.config.ChainConfig;
 import com.dowlandaiello.gitchain.crypto.Sha;
 
+import org.iq80.leveldb.DBIterator;
 import org.junit.Test;
 import org.web3j.crypto.ECKeyPair;
 import org.web3j.crypto.Keys;
@@ -44,9 +45,17 @@ public class BlockchainTest {
 
         Blockchain blockchain = new Blockchain(chainConfig); // Make new blockchain
 
+        blockchain.OpenBlockDB(); // Open db
+
+        DBIterator iterator = blockchain.BlockDB.iterator(); // Get iterator
+
+        iterator.seekToFirst(); // Seek to first element
+
         assertTrue("blockchain must not be null", blockchain != null); // Ensure chain not null
         assertTrue("genesis block must not be null", blockchain.GenesisBlock != null); // Ensure genesis not null
-        assertTrue("genesis block in blocks must not be null", blockchain.Blocks.get(0) != null); // Ensure genesis not null
+        assertTrue("genesis block in blocks must not be null", iterator.peekNext().getValue() != null); // Ensure genesis not null
+
+        blockchain.CloseBlockDB(); // Open db
     }
 
     /**
@@ -78,9 +87,15 @@ public class BlockchainTest {
 
         System.out.println(System.currentTimeMillis() / 1000 + ": finished making genesis block with difficulty " + blockchain.GenesisBlock.Difficulty + ", nonce " + blockchain.GenesisBlock.Nonce + " and block time " + (blockchain.GenesisBlock.Timestamp - genesisStartingTime)); // Log start time
 
+        blockchain.OpenBlockDB(); // Open db
+
+        DBIterator iterator = blockchain.BlockDB.iterator(); // Get iterator
+
+        iterator.seekToFirst(); // Seek to first element
+
         assertTrue("blockchain must not be null", blockchain != null); // Ensure chain not null
         assertTrue("genesis block must not be null", blockchain.GenesisBlock != null); // Ensure genesis not null
-        assertTrue("genesis block in blocks must not be null", blockchain.Blocks.get(0) != null); // Ensure genesis not null
+        assertTrue("genesis block in blocks must not be null", iterator.peekNext().getValue() != null); // Ensure genesis not null
 
         int numBlocks = 3; // Number of blocks to make
 
@@ -112,6 +127,8 @@ public class BlockchainTest {
 
             lastBlock = newBlock; // Set last block
         }
+
+        blockchain.CloseBlockDB(); // Close db
 
         System.out.println("\nfinished making " + numBlocks + " blocks with an average difficulty of " + totalDifficulty / numBlocks + ", an average nonce of "+ totalNonce / numBlocks +", and an average block time of "+ totalBlockTime / numBlocks +" in " + (System.currentTimeMillis() / 1000 - blockchain.GenesisBlock.Timestamp) +" seconds."); // Log test finished
     }
