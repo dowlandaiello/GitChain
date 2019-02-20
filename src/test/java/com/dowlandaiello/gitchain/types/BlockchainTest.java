@@ -53,7 +53,7 @@ public class BlockchainTest {
      * Test block generator.
      */
     @Test
-    public void TestCreateBlock() {
+    public void TestCreateNewBlock() {
         ECKeyPair keyPair = null; // Init buffer
 
         try {
@@ -66,47 +66,51 @@ public class BlockchainTest {
 
         alloc.put(keyPair.getPublicKey(), 1000000f); // Set alloc
 
-        ChainConfig chainConfig = new ChainConfig(alloc, 0, "test_chain", 13, 256f); // Initialize chain config
+        ChainConfig chainConfig = new ChainConfig(alloc, 0, "test_chain", 13, 250f); // Initialize chain config
 
         assertTrue("chain config must not be null", chainConfig != null); // Ensure config not null
 
-        System.out.println(System.currentTimeMillis() / 1000 + ": making genesis block (this shouldn't take more than 20 seconds"); // Log gen time
+        System.out.println(System.currentTimeMillis() / 1000 + ": making genesis block (this shouldn't take more than 20 seconds)...\n"); // Log gen time
 
         Blockchain blockchain = new Blockchain(chainConfig); // Make new blockchain
 
-        System.out.println(System.currentTimeMillis() / 1000 + ": finished making genesis block with difficulty " + blockchain.GenesisBlock.Difficulty); // Log start time
+        System.out.println(System.currentTimeMillis() / 1000 + ": finished making genesis block with difficulty " + blockchain.GenesisBlock.Difficulty + " and nonce " + blockchain.GenesisBlock.Nonce); // Log start time
 
         assertTrue("blockchain must not be null", blockchain != null); // Ensure chain not null
         assertTrue("genesis block must not be null", blockchain.GenesisBlock != null); // Ensure genesis not null
         assertTrue("genesis block in blocks must not be null", blockchain.Blocks.get(0) != null); // Ensure genesis not null
 
-        Block newBlock = blockchain.CreateNewBlock(blockchain.GenesisBlock, new Transaction[0], 0); // Generate new block
-        newBlock.Difficulty = Blockchain.CalculateDifficulty(blockchain.GenesisBlock, newBlock.Timestamp); // Set difficulty
+        int numBlocks = 50; // Number of blocks to make
 
-        assertTrue("block must not be null", newBlock != null); // Ensure block not null
-        assertTrue("block difficulty must be greater than genesis", newBlock.Difficulty > blockchain.GenesisBlock.Difficulty); // Ensure difficulty not null
+        Block lastBlock = blockchain.GenesisBlock; // Set parent
 
-        while (!Blockchain.VerifyBlockNonce(newBlock)) { // Check invalid hash
-            newBlock.Nonce++; // Increment nonce
-            newBlock.Timestamp = System.currentTimeMillis() / 1000; // Set timestamp
-            newBlock.Difficulty = Blockchain.CalculateDifficulty(blockchain.GenesisBlock, newBlock.Timestamp); // Set difficulty
+        Float totalDifficulty = 0f; // Set difficulty buffer
+        Long totalNonce = 0l; // Set nonce buffer
+        Long totalBlockTime = 0l; // Set block time buffer
+
+        for (int x = 1; x != numBlocks + 1; x++) { // Make all blocks
+            Block newBlock = blockchain.CreateNewBlock(lastBlock, new Transaction[0], 0); // Generate new block
+            newBlock.Difficulty = Blockchain.CalculateDifficulty(lastBlock, newBlock.Timestamp); // Set difficulty
+    
+            assertTrue("block must not be null", newBlock != null); // Ensure block not null
+    
+            while (!Blockchain.VerifyBlockNonce(newBlock)) { // Check invalid hash
+                newBlock.Nonce++; // Increment nonce
+                newBlock.Timestamp = System.currentTimeMillis() / 1000; // Set timestamp
+                newBlock.Difficulty = Blockchain.CalculateDifficulty(lastBlock, newBlock.Timestamp); // Set difficulty
+            }
+    
+            newBlock.Hash = Sha.Sha3(newBlock.BytesHashSafe()); // Hash
+
+            totalDifficulty += newBlock.Difficulty; // Add difficulty
+            totalNonce += newBlock.Nonce; // Add nonce
+            totalBlockTime += (newBlock.Timestamp - lastBlock.Timestamp); // Add timestamp
+    
+            System.out.println(System.currentTimeMillis() / 1000 + ": finished making block "+x+" with difficulty " + newBlock.Difficulty + ", nonce " + newBlock.Nonce + ", and block time " + (newBlock.Timestamp - lastBlock.Timestamp)); // Log finish time
+
+            lastBlock = newBlock; // Set last block
         }
 
-        newBlock.Hash = Sha.Sha3(newBlock.BytesHashSafe()); // Hash
-
-        System.out.println(System.currentTimeMillis() / 1000 + ": finished making block 1 with difficulty " + newBlock.Difficulty); // Log finish time
-
-        Block secondBlock = blockchain.CreateNewBlock(newBlock, new Transaction[0], 0); // Generate new block
-        secondBlock.Difficulty = Blockchain.CalculateDifficulty(newBlock, secondBlock.Timestamp); // Set difficulty
-
-        while (!Blockchain.VerifyBlockNonce(secondBlock)) { // Check invalid hash
-            secondBlock.Nonce++; // Increment nonce
-            secondBlock.Timestamp = System.currentTimeMillis() / 1000; // Set timestamp
-            secondBlock.Difficulty = Blockchain.CalculateDifficulty(newBlock, secondBlock.Timestamp); // Set difficulty
-        }
-
-        secondBlock.Hash = Sha.Sha3(secondBlock.BytesHashSafe()); // Hash
-
-        System.out.println(System.currentTimeMillis() / 1000 + ": finished making block 2 with difficulty " + secondBlock.Difficulty); // Log finish time
+        System.out.println("\nfinished making " + numBlocks + " blocks with an average difficulty of " + totalDifficulty / numBlocks + ", an average nonce of "+ totalNonce / numBlocks +", and an average block time of "+ totalBlockTime / numBlocks +" in " + (System.currentTimeMillis() / 1000 - blockchain.GenesisBlock.Timestamp) +" seconds."); // Log test finished
     }
 }
