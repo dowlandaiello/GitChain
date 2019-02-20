@@ -7,6 +7,7 @@ import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.dowlandaiello.gitchain.common.CommonCoin;
 import com.dowlandaiello.gitchain.config.ChainConfig;
 import com.dowlandaiello.gitchain.crypto.Sha;
 
@@ -106,7 +107,10 @@ public class BlockchainTest {
         Long totalBlockTime = 0l; // Set block time buffer
 
         for (int x = 1; x != numBlocks + 1; x++) { // Make all blocks
-            Block newBlock = blockchain.CreateNewBlock(lastBlock, new Transaction[0], 0); // Generate new block
+            Transaction[] transactions = new Transaction[1]; // Init tx arr
+            transactions[0] = new Transaction(0, new byte[0], CommonCoin.MinerCoinbase, 50, 0, new byte[0]); // Set tx
+
+            Block newBlock = blockchain.CreateNewBlock(lastBlock, transactions, 0); // Generate new block
             newBlock.Difficulty = Blockchain.CalculateDifficulty(lastBlock, newBlock.Timestamp); // Set difficulty
     
             assertTrue("block must not be null", newBlock != null); // Ensure block not null
