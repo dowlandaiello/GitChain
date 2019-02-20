@@ -66,13 +66,15 @@ public class BlockchainTest {
 
         alloc.put(keyPair.getPublicKey(), 1000000f); // Set alloc
 
-        ChainConfig chainConfig = new ChainConfig(alloc, 0, "test_chain", 13, 255f); // Initialize chain config
+        ChainConfig chainConfig = new ChainConfig(alloc, 0, "test_chain", 13, 256f); // Initialize chain config
 
         assertTrue("chain config must not be null", chainConfig != null); // Ensure config not null
 
+        System.out.println(System.currentTimeMillis() / 1000 + ": making genesis block (this shouldn't take more than 20 seconds"); // Log gen time
+
         Blockchain blockchain = new Blockchain(chainConfig); // Make new blockchain
 
-        System.out.println(System.currentTimeMillis() / 1000); // Log start time
+        System.out.println(System.currentTimeMillis() / 1000 + ": finished making genesis block with difficulty " + blockchain.GenesisBlock.Difficulty); // Log start time
 
         assertTrue("blockchain must not be null", blockchain != null); // Ensure chain not null
         assertTrue("genesis block must not be null", blockchain.GenesisBlock != null); // Ensure genesis not null
@@ -90,11 +92,9 @@ public class BlockchainTest {
             newBlock.Difficulty = Blockchain.CalculateDifficulty(blockchain.GenesisBlock, newBlock.Timestamp); // Set difficulty
         }
 
-        System.out.println(newBlock.Difficulty);
-
         newBlock.Hash = Sha.Sha3(newBlock.BytesHashSafe()); // Hash
 
-        System.out.println(System.currentTimeMillis() / 1000); // Log finish time
+        System.out.println(System.currentTimeMillis() / 1000 + ": finished making block 1 with difficulty " + newBlock.Difficulty); // Log finish time
 
         Block secondBlock = blockchain.CreateNewBlock(newBlock, new Transaction[0], 0); // Generate new block
         secondBlock.Difficulty = Blockchain.CalculateDifficulty(newBlock, secondBlock.Timestamp); // Set difficulty
@@ -107,6 +107,6 @@ public class BlockchainTest {
 
         secondBlock.Hash = Sha.Sha3(secondBlock.BytesHashSafe()); // Hash
 
-        System.out.println(System.currentTimeMillis() / 1000); // Log finish time
+        System.out.println(System.currentTimeMillis() / 1000 + ": finished making block 2 with difficulty " + secondBlock.Difficulty); // Log finish time
     }
 }
