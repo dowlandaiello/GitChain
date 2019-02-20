@@ -80,7 +80,7 @@ public class BlockchainTest {
         assertTrue("genesis block must not be null", blockchain.GenesisBlock != null); // Ensure genesis not null
         assertTrue("genesis block in blocks must not be null", blockchain.Blocks.get(0) != null); // Ensure genesis not null
 
-        int numBlocks = 50; // Number of blocks to make
+        int numBlocks = 3; // Number of blocks to make
 
         Block lastBlock = blockchain.GenesisBlock; // Set parent
 
