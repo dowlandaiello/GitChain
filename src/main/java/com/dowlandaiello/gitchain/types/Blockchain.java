@@ -49,7 +49,9 @@ public class Blockchain {
     public Blockchain(ChainConfig chainConfig) {
         Block genesisBlock = MakeGenesisBlock(chainConfig); // Make genesis
 
-        if (genesisBlock.Difficulty == 0) genesisBlock.Difficulty = 1f; // Set difficulty
+        if (genesisBlock.Difficulty == 0) { // Check invalid difficulty
+            genesisBlock.Difficulty = 1f; // Set difficulty
+        }
 
         this.Config = chainConfig; // Set chain config
         this.ChainID = chainConfig.Chain; // Set chain name
@@ -71,7 +73,9 @@ public class Blockchain {
     public Block CreateNewBlock(Block parent, Transaction[] transactions, long nonce) {
         long time = System.currentTimeMillis() / 1000; // Get block time
 
-        if (parent.Timestamp >= time) time = parent.Timestamp + 1; // Adjust time to parent block
+        if (parent.Timestamp >= time) { // Check invalid time
+            time = parent.Timestamp + 1; // Adjust time to parent block
+        }
 
         return new Block(
             transactions,
@@ -106,10 +110,12 @@ public class Blockchain {
 
         Block genesisBlock = new Block(transactions, new byte[0], CommonCoin.MinerCoinbase, chainConfig.Difficulty, 0); // Create block
 
+        Block difficultySpawnBlock = new Block(new Transaction[0], new byte[0], new byte[0], chainConfig.Difficulty, 0); // Create chain difficulty spawn block
+
         while (!Blockchain.VerifyBlockNonce(genesisBlock)) { // Calculate nonce
             genesisBlock.Nonce++; // Increment nonce
             genesisBlock.Timestamp = System.currentTimeMillis() / 1000; // Set timestamp
-            genesisBlock.Difficulty = Blockchain.CalculateDifficulty(genesisBlock, genesisBlock.Timestamp); // Set difficulty
+            genesisBlock.Difficulty = Blockchain.CalculateDifficulty(difficultySpawnBlock, genesisBlock.Timestamp); // Set difficulty
         }
 
         genesisBlock.Hash = Sha.Sha3(genesisBlock.Bytes()); // Hash
@@ -124,7 +130,9 @@ public class Blockchain {
      * @return validity of block hash
      */
     public static boolean VerifyBlockNonce(Block block) {
-        if (Float.isFinite(block.Difficulty)) throw new RuntimeException("block difficulty overflow--block difficulty is infinite"); // Panic
+        if (Float.isInfinite(block.Difficulty)) { // Check invalid difficulty
+            throw new RuntimeException("block difficulty overflow--block difficulty is infinite"); // Panic
+        }
 
         BigInteger max = BigInteger.valueOf(2).pow(255); // Get max difficulty
         byte[] target = BigIntegers.asUnsignedByteArray(32, max.divide(new BigInteger(1, Long.toHexString(block.Difficulty.longValue()).getBytes()))); // Calculate target difficulty hash
@@ -152,7 +160,9 @@ public class Blockchain {
         x = x.divide(BigInteger.valueOf(10l)); // Weird mem allocations
         x = BigInteger.valueOf(1l).subtract(x); // More weird mem allocations
 
-        if (x.compareTo(BigInteger.valueOf(-99l)) < 0) x = BigInteger.valueOf(-99l); // max(1 - (block_timestamp - parent_timestamp) // 10, -99)
+        if (x.compareTo(BigInteger.valueOf(-99l)) < 0) {
+            x = BigInteger.valueOf(-99l); // max(1 - (block_timestamp - parent_timestamp) // 10, -99)
+        }
 
         y = BigDecimal.valueOf(parent.Difficulty / 2048); // parent_diff // 2048
         
