@@ -66,7 +66,7 @@ public class BlockchainTest {
 
         alloc.put(keyPair.getPublicKey(), 1000000f); // Set alloc
 
-        ChainConfig chainConfig = new ChainConfig(alloc, 0, "test_chain", 13, 256f); // Initialize chain config
+        ChainConfig chainConfig = new ChainConfig(alloc, 0, "test_chain", 13, 255.9f); // Initialize chain config
 
         assertTrue("chain config must not be null", chainConfig != null); // Ensure config not null
 
