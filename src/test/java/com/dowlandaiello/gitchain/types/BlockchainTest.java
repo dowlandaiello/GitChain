@@ -70,11 +70,13 @@ public class BlockchainTest {
 
         assertTrue("chain config must not be null", chainConfig != null); // Ensure config not null
 
-        System.out.println(System.currentTimeMillis() / 1000 + ": making genesis block (this shouldn't take more than 25 seconds)...\n"); // Log gen time
+        long genesisStartingTime = System.currentTimeMillis() / 1000; // Get current timestamp
+
+        System.out.println(genesisStartingTime + ": making genesis block (this shouldn't take more than 25 seconds)...\n"); // Log gen time
 
         Blockchain blockchain = new Blockchain(chainConfig); // Make new blockchain
 
-        System.out.println(System.currentTimeMillis() / 1000 + ": finished making genesis block with difficulty " + blockchain.GenesisBlock.Difficulty + " and nonce " + blockchain.GenesisBlock.Nonce); // Log start time
+        System.out.println(System.currentTimeMillis() / 1000 + ": finished making genesis block with difficulty " + blockchain.GenesisBlock.Difficulty + ", nonce " + blockchain.GenesisBlock.Nonce + " and block time " + (blockchain.GenesisBlock.Timestamp - genesisStartingTime)); // Log start time
 
         assertTrue("blockchain must not be null", blockchain != null); // Ensure chain not null
         assertTrue("genesis block must not be null", blockchain.GenesisBlock != null); // Ensure genesis not null
