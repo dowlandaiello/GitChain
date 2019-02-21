@@ -77,6 +77,27 @@ public class Account {
     }
 
     /**
+     * Read p2p identity from persistent memory.
+     */
+    public static Account ReadAccount(String chain) {
+        File keystoreFile = new File(CommonIO.P2PKeystorePath + "/" + chain + "/identity.json"); // Init file
+
+        byte[] rawJSON = null; // Declare buffer
+
+        try {
+            rawJSON = Files.readAllBytes(keystoreFile.toPath());
+        } catch (IOException e) { // Catch
+            if (!CommonIO.StdoutSilenced) { // Check can print
+                e.printStackTrace(); // Log stack trace
+            }
+        }
+
+        Account account = new Account(rawJSON); // init account
+
+        return account; // Return account
+    }
+
+    /**
      * Write account to persistent memory.
      * @return whether the operation was successful
      */
@@ -87,6 +108,32 @@ public class Account {
 
         try {
             FileWriter writer = new FileWriter(CommonIO.KeystorePath + "/account_" + Hex.encodeHexString(this.PublicKey.toByteArray()) + ".json"); // Init writer
+
+            gson.toJson(this, writer); // Write gson
+
+            writer.close(); // Close writer
+        } catch (IOException e) { // Catch
+            if (!CommonIO.StdoutSilenced) { // Check can print
+                e.printStackTrace(); // Log stack trace
+
+                return false; // Failed
+            }
+        }
+
+        return true; // Success
+    }
+
+    /**
+     * Write p2p identity to persistent memory.
+     * @return whether the operation was successful
+     */
+    public boolean WriteToMemory(String chain) {
+        Gson gson = new GsonBuilder().setPrettyPrinting().create(); // Init gson
+
+        CommonIO.MakeDirIfNotExist(CommonIO.KeystorePath); // Make keystore dir
+
+        try {
+            FileWriter writer = new FileWriter(CommonIO.P2PKeystorePath + "/" + chain + "/identity.json"); // Init writer
 
             gson.toJson(this, writer); // Write gson
 
