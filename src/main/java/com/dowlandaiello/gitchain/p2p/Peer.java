@@ -13,13 +13,13 @@ import org.web3j.crypto.Keys;
  */
 public class Peer {
     /* Peer public key used for peer identification (separate from coin public key) */
-    BigInteger PublicKey;
+    public BigInteger PublicKey;
 
     /* Peer IP protocol */
-    CommonNet.Protocol Protocol;
+    public CommonNet.Protocol Protocol;
 
     /* Addr to connect to peer */
-    String ConnectionAddr;
+    public String ConnectionAddr;
 
     /**
      * Initialize a new peer with a given connection address, generating a new key pair for the peer.
