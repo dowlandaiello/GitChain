@@ -29,13 +29,16 @@ public class CommonIO {
     public static String DataPath = new File("data").getAbsolutePath();
 
     /* Default db path */
-    public static String DbPath = new File(DataPath+"/db").getAbsolutePath();
+    public static String DbPath = new File(DataPath + "/db").getAbsolutePath();
 
     /* Default config path */
-    public static String ConfigPath = new File(DataPath+"/config").getAbsolutePath();
+    public static String ConfigPath = new File(DataPath + "/config").getAbsolutePath();
 
     /* Default genesis.json path */
-    public static String GenesisPath = new File(ConfigPath+"/genesis.json").getAbsolutePath();
+    public static String GenesisPath = new File(ConfigPath + "/genesis.json").getAbsolutePath();
+
+    /* Default keystore path */
+    public static String KeystorePath = new File(DataPath + "/keystore").getAbsolutePath();
 
     /* Silence prints */
     public static boolean StdoutSilenced = false;
