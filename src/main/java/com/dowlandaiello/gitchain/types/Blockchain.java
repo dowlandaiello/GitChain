@@ -18,6 +18,7 @@ import com.dowlandaiello.gitchain.crypto.Sha;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import org.apache.commons.codec.binary.Hex;
 import org.bouncycastle.util.Arrays;
 import org.bouncycastle.util.BigIntegers;
 
@@ -123,13 +124,27 @@ public class Blockchain {
     public Block GetLastBlock() {
         DBIterator iterator = this.BlockDB.iterator(); // Get iterator
 
-        iterator.seekToFirst(); // Seek to end of db
+        iterator.seekToFirst(); // Seek to start of db
 
-        if (iterator.hasNext()) { // Can seek to end
-            iterator.seekToLast(); // Seek to end
+        byte[] lastBlockBytes = null; // Init buffer
+
+        for (iterator.seekToFirst(); iterator.hasNext(); iterator.next()) { // Navigate to last block
+            lastBlockBytes = iterator.peekNext().getValue(); // Set block bytes
         }
 
-        return new Block(iterator.peekNext().getValue()); // Return block
+        try {
+            iterator.close(); // Close iterator
+        } catch (IOException e) { // Catch
+            if (!CommonIO.StdoutSilenced) { // Check can print
+                e.printStackTrace(); // Print stack trace
+            }
+
+            return null; // Failed
+        }
+
+        Block lastBlock = new Block(lastBlockBytes); // Get block
+
+        return lastBlock; // Return block
     }
 
     /**
