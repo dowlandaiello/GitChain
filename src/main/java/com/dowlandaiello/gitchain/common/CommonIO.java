@@ -1,8 +1,10 @@
 package com.dowlandaiello.gitchain.common;
 
 import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.Type;
 
+import com.google.common.collect.ImmutableList;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
@@ -10,6 +12,8 @@ import com.google.gson.JsonParseException;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
+
+import static com.google.common.base.Preconditions.checkArgument;
 
 /**
  * CommonIO is an IO helper class.
@@ -47,6 +51,64 @@ public class CommonIO {
         if (!directory.exists()) { // Dir doesn't exist
             directory.mkdirs(); // Make directory
         }
+    }
+
+    public static boolean DeleteDirectoryContents(File directory) {
+        checkArgument(directory.isDirectory(), "Not a directory: %s", directory);
+
+        // Don't delete symbolic link directories
+        if (IsSymbolicLink(directory)) {
+            return false;
+        }
+
+        boolean success = true;
+        for (File file : ListFiles(directory)) {
+            success = DeleteRecursively(file) && success;
+        }
+        return success;
+    }
+
+    /**
+     * Delete directory recursively.
+     */
+    public static boolean DeleteRecursively(File file) {
+        boolean success = true;
+        if (file.isDirectory()) {
+            success = DeleteDirectoryContents(file);
+        }
+
+        return file.delete() && success;
+    }
+
+    /**
+     * Check is symbolic link.
+     */
+    public static boolean IsSymbolicLink(File file) {
+        try {
+            File canonicalFile = file.getCanonicalFile();
+            File absoluteFile = file.getAbsoluteFile();
+            File parentFile = file.getParentFile();
+            // a symbolic link has a different name between the canonical and absolute path
+            return !canonicalFile.getName().equals(absoluteFile.getName()) ||
+                    // or the canonical parent path is not the same as the file's parent path,
+                    // provided the file has a parent path
+                    parentFile != null && !parentFile.getCanonicalPath().equals(canonicalFile.getParent());
+        }
+        catch (IOException e) {
+            // error on the side of caution
+            return true;
+        }
+    }
+
+    /**
+     * List files in directory.
+     */
+    public static ImmutableList<File> ListFiles(File dir) {
+        File[] files = dir.listFiles();
+        if (files == null) {
+            return ImmutableList.of();
+        }
+        return ImmutableList.copyOf(files);
     }
 
     /**
