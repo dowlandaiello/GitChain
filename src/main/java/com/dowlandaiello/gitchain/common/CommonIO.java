@@ -40,6 +40,9 @@ public class CommonIO {
     /* Default keystore path */
     public static String KeystorePath = new File(DataPath + "/keystore").getAbsolutePath();
 
+    /* Default p2p keystore path */
+    public static String P2PKeystorePath = new File(KeystorePath + "/p2p").getAbsolutePath();
+
     /* Silence prints */
     public static boolean StdoutSilenced = false;
 
