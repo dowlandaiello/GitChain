@@ -18,6 +18,7 @@ import com.dowlandaiello.gitchain.crypto.Sha;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import org.apache.commons.codec.binary.Hex;
 import org.bouncycastle.util.Arrays;
 import org.bouncycastle.util.BigIntegers;
 
@@ -106,7 +107,7 @@ public class Blockchain {
      * @return whether the block was added successfully
      */
     public boolean AddBlock(Block block) {
-        if (this.BlockDB == null || !VerifyBlockNonce(block) || block.ParentHash != this.GetLastBlock().Hash) { // Check no block db, block nonce invalid
+        if (this.BlockDB == null || !VerifyBlockNonce(block) || !java.util.Arrays.equals(block.ParentHash, this.GetLastBlock().Hash)) { // Check no block db, block nonce invalid
             return false; // ¯\_(ツ)_/¯
         }
 
