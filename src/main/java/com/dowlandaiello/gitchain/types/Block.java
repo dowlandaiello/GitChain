@@ -62,6 +62,23 @@ public class Block implements Serializable {
     }
 
     /**
+     * Deserialize a block from a given byte array, rawBytes.
+     * @param rawBytes
+     */
+    public Block(byte[] rawBytes) {
+        Block block = SerializationUtils.deserialize(rawBytes); // Deserialize
+
+        this.Transactions = block.Transactions; // Set transactions
+        this.MerkleRoot = block.MerkleRoot; // Set merkle root
+        this.ParentHash = block.ParentHash; // Set parent hash
+        this.Coinbase = block.Coinbase; // Set coinbase
+        this.Difficulty = block.Difficulty; // Set difficulty
+        this.Nonce = block.Nonce; // Set nonce
+        this.Hash = block.Hash; // Set hash
+        this.Timestamp = block.Timestamp; // Set timestamp
+    }
+
+    /**
      * Serialize block to byte array
      * 
      * @return byte serialized block
