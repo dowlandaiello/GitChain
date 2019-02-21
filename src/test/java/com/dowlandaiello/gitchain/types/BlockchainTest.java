@@ -144,6 +144,8 @@ public class BlockchainTest {
             lastBlock = newBlock; // Set last block
         }
 
+        blockchain.CloseBlockDB(); // Close block db
+
         assertTrue("must remove test cache",
                 CommonIO.DeleteDirectoryContents(new java.io.File(CommonIO.DbPath + "/" + chainConfig.Chain))); // Delete
                                                                                                                 // test
