@@ -23,7 +23,7 @@ import org.bouncycastle.util.BigIntegers;
 
 import org.iq80.leveldb.*;
 
-import static org.iq80.leveldb.impl.Iq80DBFactory.*;
+import static org.fusesource.leveldbjni.JniDBFactory.*;
 
 /**
  * Blockchain is a data type containing a list of blocks, a genesis block, and consensus metadata.
