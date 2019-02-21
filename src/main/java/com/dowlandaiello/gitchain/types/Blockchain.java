@@ -18,7 +18,6 @@ import com.dowlandaiello.gitchain.crypto.Sha;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-import org.apache.commons.codec.binary.Hex;
 import org.bouncycastle.util.Arrays;
 import org.bouncycastle.util.BigIntegers;
 
