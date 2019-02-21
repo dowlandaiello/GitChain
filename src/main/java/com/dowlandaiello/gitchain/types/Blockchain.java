@@ -131,7 +131,7 @@ public class Blockchain {
      */
     public Block GetLastBlock() {
         if (!this.OpenBlockDB()) { // Open block db
-            return false; // Failed
+            return null; // Failed
         }
 
         DBIterator iterator = this.BlockDB.iterator(); // Get iterator
