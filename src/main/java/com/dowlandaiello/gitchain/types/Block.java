@@ -19,7 +19,7 @@ public class Block implements Serializable {
     static final long serialVersionUID = CommonIO.SerialVersionUID;
 
     /* Transactions in block */
-    Transaction[] Transactions;
+    public Transaction[] Transactions;
 
     /* Exactly what it sounds like... */
     public byte[] MerkleRoot;
