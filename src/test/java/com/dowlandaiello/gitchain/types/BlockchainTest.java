@@ -14,7 +14,6 @@ import com.dowlandaiello.gitchain.config.ChainConfig;
 import com.dowlandaiello.gitchain.crypto.Sha;
 
 import org.iq80.leveldb.DBIterator;
-import org.iq80.leveldb.util.FileUtils;
 import org.junit.Test;
 import org.web3j.crypto.ECKeyPair;
 import org.web3j.crypto.Keys;
@@ -45,7 +44,7 @@ public class BlockchainTest {
 
         ChainConfig chainConfig = new ChainConfig(alloc, 0, "test_chain", 10, 1f); // Initialize chain config
 
-        assertTrue("must remove test cache", FileUtils.deleteDirectoryContents(new java.io.File(CommonIO.DbPath + "/" + chainConfig.Chain))); // Delete test cache
+        assertTrue("must remove test cache", CommonIO.DeleteDirectoryContents(new java.io.File(CommonIO.DbPath + "/" + chainConfig.Chain))); // Delete test cache
 
         assertTrue("chain config must not be null", chainConfig != null); // Ensure config not null
 
@@ -67,7 +66,7 @@ public class BlockchainTest {
 
         blockchain.CloseBlockDB(); // Close block db
 
-        assertTrue("must remove test cache", FileUtils.deleteDirectoryContents(new java.io.File(CommonIO.DbPath + "/" + chainConfig.Chain))); // Delete test cache
+        assertTrue("must remove test cache", CommonIO.DeleteDirectoryContents(new java.io.File(CommonIO.DbPath + "/" + chainConfig.Chain))); // Delete test cache
     }
 
     /**
@@ -89,7 +88,7 @@ public class BlockchainTest {
 
         ChainConfig chainConfig = new ChainConfig(alloc, 0, "test_chain", 13, 255.9f); // Initialize chain config
 
-        assertTrue("must remove test cache", FileUtils.deleteDirectoryContents(new java.io.File(CommonIO.DbPath + "/" + chainConfig.Chain))); // Delete test cache
+        assertTrue("must remove test cache", CommonIO.DeleteDirectoryContents(new java.io.File(CommonIO.DbPath + "/" + chainConfig.Chain))); // Delete test cache
 
         assertTrue("chain config must not be null", chainConfig != null); // Ensure config not null
 
@@ -151,7 +150,7 @@ public class BlockchainTest {
 
         blockchain.CloseBlockDB(); // Close block db
 
-        assertTrue("must remove test cache", FileUtils.deleteDirectoryContents(new java.io.File(CommonIO.DbPath + "/" + chainConfig.Chain))); // Delete test cache
+        assertTrue("must remove test cache", CommonIO.DeleteDirectoryContents(new java.io.File(CommonIO.DbPath + "/" + chainConfig.Chain))); // Delete test cache
 
         System.out.println("\nfinished making " + numBlocks + " blocks with an average difficulty of " + totalDifficulty / numBlocks + ", an average nonce of "+ totalNonce / numBlocks +", and an average block time of "+ totalBlockTime / numBlocks +" in " + (System.currentTimeMillis() / 1000 - blockchain.GenesisBlock.Timestamp) +" seconds."); // Log test finished
     }
@@ -175,7 +174,7 @@ public class BlockchainTest {
 
         ChainConfig chainConfig = new ChainConfig(alloc, 0, "test_chain", 13, 255.9f); // Initialize chain config
 
-        assertTrue("must remove test cache", FileUtils.deleteDirectoryContents(new java.io.File(CommonIO.DbPath + "/" + chainConfig.Chain))); // Delete test cache
+        assertTrue("must remove test cache", CommonIO.DeleteDirectoryContents(new java.io.File(CommonIO.DbPath + "/" + chainConfig.Chain))); // Delete test cache
 
         assertTrue("chain config must not be null", chainConfig != null); // Ensure config not null
 
@@ -239,7 +238,7 @@ public class BlockchainTest {
 
         blockchain.CloseBlockDB(); // Close block db
 
-        assertTrue("must remove test cache", FileUtils.deleteDirectoryContents(new java.io.File(CommonIO.DbPath + "/" + chainConfig.Chain))); // Delete test cache
+        assertTrue("must remove test cache", CommonIO.DeleteDirectoryContents(new java.io.File(CommonIO.DbPath + "/" + chainConfig.Chain))); // Delete test cache
 
         System.out.println("\nfinished making " + numBlocks + " blocks with an average difficulty of " + totalDifficulty / numBlocks + ", an average nonce of "+ totalNonce / numBlocks +", and an average block time of "+ totalBlockTime / numBlocks +" in " + (System.currentTimeMillis() / 1000 - blockchain.GenesisBlock.Timestamp) +" seconds."); // Log test finished
     }
