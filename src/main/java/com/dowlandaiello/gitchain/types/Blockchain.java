@@ -79,7 +79,6 @@ public class Blockchain {
             this.BlockDB = factory.open(new File(CommonIO.DbPath + "/" + chainConfig.Chain), options); // Construct DB
 
             this.BlockDB.put(genesisBlock.Hash, genesisBlock.Bytes()); // Add genesis reeReeReeReeRee
-            this.BlockDB.close(); // Close db
         } catch (IOException e) {
             throw new RuntimeException(e); // Panic
         }
