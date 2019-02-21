@@ -79,6 +79,8 @@ public class Blockchain {
             this.BlockDB = factory.open(new File(CommonIO.DbPath + "/" + chainConfig.Chain), options); // Construct DB
 
             this.BlockDB.put(genesisBlock.Hash, genesisBlock.Bytes()); // Add genesis reeReeReeReeRee
+
+            CloseBlockDB(); // Close block DB
         } catch (IOException e) {
             throw new RuntimeException(e); // Panic
         }
@@ -106,6 +108,10 @@ public class Blockchain {
      * @return whether the block was added successfully
      */
     public boolean AddBlock(Block block) {
+        if (!this.OpenBlockDB()) { // Open block db
+            return false; // Failed
+        }
+
         if (this.BlockDB == null || !VerifyBlockNonce(block) || !java.util.Arrays.equals(block.ParentHash, this.GetLastBlock().Hash)) { // Check no block db, block nonce invalid
             return false; // ¯\_(ツ)_/¯
         }
@@ -116,7 +122,7 @@ public class Blockchain {
             return false; // Failed
         }
 
-        return true; // Success
+        return this.CloseBlockDB(); // Success
     }
 
     /**
@@ -124,6 +130,10 @@ public class Blockchain {
      * @return last block
      */
     public Block GetLastBlock() {
+        if (!this.OpenBlockDB()) { // Open block db
+            return false; // Failed
+        }
+
         DBIterator iterator = this.BlockDB.iterator(); // Get iterator
 
         iterator.seekToLast(); // Seek to start of db
@@ -139,6 +149,8 @@ public class Blockchain {
 
             return null; // Failed
         }
+
+        this.CloseBlockDB(); // Close block db
 
         return lastBlock; // Return block
     }
