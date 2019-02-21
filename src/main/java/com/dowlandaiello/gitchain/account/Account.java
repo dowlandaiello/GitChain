@@ -69,6 +69,8 @@ public class Account {
             if (!CommonIO.StdoutSilenced) { // Check can print
                 e.printStackTrace(); // Log stack trace
             }
+
+            return null; // Failed
         }
 
         Account account = new Account(rawJSON); // init account
@@ -130,7 +132,7 @@ public class Account {
     public boolean WriteToMemory(String chain) {
         Gson gson = new GsonBuilder().setPrettyPrinting().create(); // Init gson
 
-        CommonIO.MakeDirIfNotExist(CommonIO.KeystorePath); // Make keystore dir
+        CommonIO.MakeDirIfNotExist(CommonIO.P2PKeystorePath + "/" + chain); // Make keystore dir
 
         try {
             FileWriter writer = new FileWriter(CommonIO.P2PKeystorePath + "/" + chain + "/identity.json"); // Init writer
