@@ -126,13 +126,9 @@ public class Blockchain {
     public Block GetLastBlock() {
         DBIterator iterator = this.BlockDB.iterator(); // Get iterator
 
-        iterator.seekToFirst(); // Seek to start of db
+        iterator.seekToLast(); // Seek to start of db
 
-        byte[] lastBlockBytes = null; // Init buffer
-
-        for (iterator.seekToFirst(); iterator.hasNext(); iterator.next()) { // Navigate to last block
-            lastBlockBytes = iterator.peekNext().getValue(); // Set block bytes
-        }
+        Block lastBlock = new Block(iterator.peekNext().getValue()); // Get block
 
         try {
             iterator.close(); // Close iterator
@@ -143,8 +139,6 @@ public class Blockchain {
 
             return null; // Failed
         }
-
-        Block lastBlock = new Block(lastBlockBytes); // Get block
 
         return lastBlock; // Return block
     }
