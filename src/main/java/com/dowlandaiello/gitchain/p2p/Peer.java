@@ -50,7 +50,7 @@ public class Peer {
     /**
      * Initialize a new peer with a given connection address and elliptic curve identity.
      */
-    public Peer(BigInteger publicKey, String connectionAddr) {
+    public Peer(String connectionAddr, BigInteger publicKey) {
         this.PublicKey = publicKey; // Set public key
         this.ConnectionAddr = connectionAddr; // Set connection addr
 
@@ -64,7 +64,7 @@ public class Peer {
     /**
      * Initialize a new peer with a given connection address, identity, and protocol.
      */
-    public Peer(BigInteger publicKey, String connectionAddr, CommonNet.Protocol protocol) {
+    public Peer(String connectionAddr, BigInteger publicKey, CommonNet.Protocol protocol) {
         this.PublicKey = publicKey; // Set public key
         this.ConnectionAddr = connectionAddr; // Set connection address
         this.Protocol = protocol; // Set protocol
