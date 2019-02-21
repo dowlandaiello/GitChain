@@ -88,7 +88,7 @@ public class Block implements Serializable {
     }
 
     /**
-     * Serialize block to byte array, ommitting the block hash
+     * Serialize block to byte array, omitting the block hash
      */
     public byte[] BytesHashSafe() {
         byte[] oldHash = this.Hash; // Store hash
@@ -103,7 +103,7 @@ public class Block implements Serializable {
     }
 
     /**
-     * Serialize block to byte array, ommitting the block nonce and block hash
+     * Serialize block to byte array, omitting the block nonce and block hash
      * @return
      */
     public byte[] BytesWithoutNonce() {
