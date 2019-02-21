@@ -116,6 +116,8 @@ public class Blockchain {
             return false; // Failed
         }
 
+        this.TotalDifficulty += block.Difficulty; // Add difficulty
+
         return true; // Success
     }
 
