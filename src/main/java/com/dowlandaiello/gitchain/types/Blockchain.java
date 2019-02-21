@@ -110,7 +110,11 @@ public class Blockchain {
             return false; // ¯\_(ツ)_/¯
         }
 
-        this.BlockDB.put(block.Hash, block.Bytes()); // Add block
+        try {
+            this.BlockDB.put(block.Hash, block.Bytes()); // Add block
+        } catch (DBException e) { // Catch
+            return false; // Failed
+        }
 
         return true; // Success
     }
