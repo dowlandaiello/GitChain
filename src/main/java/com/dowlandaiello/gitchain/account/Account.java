@@ -81,8 +81,8 @@ public class Account {
     /**
      * Read p2p identity from persistent memory.
      */
-    public static Account ReadAccount(String chain) {
-        File keystoreFile = new File(CommonIO.P2PKeystorePath + "/" + chain + "/identity.json"); // Init file
+    public static Account ReadP2PIdentity() {
+        File keystoreFile = new File(CommonIO.P2PKeystorePath + "/identity.json"); // Init file
 
         byte[] rawJSON = null; // Declare buffer
 
@@ -129,13 +129,13 @@ public class Account {
      * Write p2p identity to persistent memory.
      * @return whether the operation was successful
      */
-    public boolean WriteToMemory(String chain) {
+    public boolean WriteP2PIdentityToMemory() {
         Gson gson = new GsonBuilder().setPrettyPrinting().create(); // Init gson
 
-        CommonIO.MakeDirIfNotExist(CommonIO.P2PKeystorePath + "/" + chain); // Make keystore dir
+        CommonIO.MakeDirIfNotExist(CommonIO.P2PKeystorePath); // Make keystore dir
 
         try {
-            FileWriter writer = new FileWriter(CommonIO.P2PKeystorePath + "/" + chain + "/identity.json"); // Init writer
+            FileWriter writer = new FileWriter(CommonIO.P2PKeystorePath + "/identity.json"); // Init writer
 
             gson.toJson(this, writer); // Write gson
 
