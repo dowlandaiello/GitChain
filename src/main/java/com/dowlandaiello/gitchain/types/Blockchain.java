@@ -102,6 +102,37 @@ public class Blockchain {
     }
 
     /**
+     * Add specified block to blockchain.
+     * @param block block to add
+     * @return whether the block was added successfully
+     */
+    public boolean AddBlock(Block block) {
+        if (this.BlockDB == null || !VerifyBlockNonce(block) || block.ParentHash != this.GetLastBlock().Hash) { // Check no block db, block nonce invalid
+            return false; // ¯\_(ツ)_/¯
+        }
+
+        this.BlockDB.put(block.Hash, block.Bytes()); // Add block
+
+        return true; // Success
+    }
+
+    /**
+     * Get working block.
+     * @return last block
+     */
+    public Block GetLastBlock() {
+        DBIterator iterator = this.BlockDB.iterator(); // Get iterator
+
+        iterator.seekToFirst(); // Seek to end of db
+
+        if (iterator.hasNext()) { // Can seek to end
+            iterator.seekToLast(); // Seek to end
+        }
+
+        return new Block(iterator.peekNext().getValue()); // Return block
+    }
+
+    /**
      * Open blockchain block database.
      */
     public boolean OpenBlockDB() {
