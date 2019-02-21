@@ -126,9 +126,17 @@ public class Blockchain {
     public Block GetLastBlock() {
         DBIterator iterator = this.BlockDB.iterator(); // Get iterator
 
-        iterator.seekToLast(); // Seek to start of db
+        iterator.seekToFirst(); // Seek to first
 
-        Block lastBlock = new Block(iterator.peekNext().getValue()); // Get block
+        Block lastBlock = new Block(iterator.peekNext().getValue()); // Init block buffer
+
+        for (iterator.seekToFirst(); iterator.hasNext(); iterator.next()) { // Move to next
+            Block currentBlock = new Block(iterator.peekNext().getValue()); // Get current block
+
+            if (currentBlock.Timestamp > lastBlock.Timestamp) { // Check newer block
+                lastBlock = currentBlock; // Set last block
+            }
+        }
 
         try {
             iterator.close(); // Close iterator
