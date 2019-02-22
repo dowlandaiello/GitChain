@@ -63,7 +63,7 @@ public class Block implements Serializable {
 
     /**
      * Deserialize a block from a given byte array, rawBytes.
-     * @param rawBytes
+     * @param rawBytes raw data to deserialize
      */
     public Block(byte[] rawBytes) {
         Block block = SerializationUtils.deserialize(rawBytes); // Deserialize
