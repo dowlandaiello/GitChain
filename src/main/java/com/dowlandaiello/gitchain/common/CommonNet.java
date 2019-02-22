@@ -78,4 +78,55 @@ public class CommonNet {
             return false; // Not connected
         }
     }
+
+    /**
+     * Parse a string peer connection address.
+     * 
+     * @return parsed address
+     */
+    public static PeerAddress ParseConnectionAddress(String peerConnectionAddress) {
+        String[] params = peerConnectionAddress.split("/"); // Split params
+
+        if (params.length < 3) { // Check invalid params
+            return null; // Failed
+        }
+
+        Protocol protocol = null; // Init buffer
+
+        switch (params[0]) {
+            case "ipv4":
+                protocol = Protocol.IPV4; // Set protocol
+            case "ipv6":
+                protocol = Protocol.IPV6; // Set protocol
+        }
+
+        return new PeerAddress(protocol, params[1], Integer.parseInt(params[params.length - 1])); // Return peer address
+    }
+
+    /**
+     * Peer address is a data type representing a parsed peer address string commonly in the form of "/ipv4/127.0.0.1/tcp/3000"
+     */
+    public static class PeerAddress {
+        /* Address protocol */
+        public Protocol Protocol;
+
+        /* IP Address */
+        public String InetAddress;
+
+        /* Port */
+        public int Port;
+
+        /**
+         * Initialize peer address with given params.
+         * 
+         * @param protocol IP protocol
+         * @param inetAddress IP address
+         * @param port port
+         */
+        public PeerAddress(Protocol protocol, String inetAddress, int port) {
+            this.Protocol = protocol; // Set protocol
+            this.InetAddress = inetAddress; // Set addr
+            this.Port = port; // Set port
+        }
+    }
 }
