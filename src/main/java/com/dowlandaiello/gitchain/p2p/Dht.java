@@ -15,9 +15,11 @@ import static org.fusesource.leveldbjni.JniDBFactory.*;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.Serializable;
 import java.net.Socket;
+import java.nio.file.Files;
 
 /**
  * Dht is a synchronously managed distributed hash table used for the storage
@@ -80,6 +82,64 @@ public class Dht implements Serializable {
      */
     public byte[] Bytes() {
         return SerializationUtils.serialize(this); // Return serialized
+    }
+
+    /**
+     * Read DHT header from persistent memory.
+     * 
+     * @return read DHT
+     */
+    public static Dht ReadFromMemory(String chain) {
+        File dbHeaderFile = new File(CommonIO.DHTPath + "/" + chain + "/db_header.db"); // Init file
+
+        byte[] rawData = null; // Declare buffer
+
+        try {
+            rawData = Files.readAllBytes(dbHeaderFile.toPath());
+        } catch (IOException e) { // Catch
+            if (!CommonIO.StdoutSilenced) { // Check can print
+                e.printStackTrace(); // Log stack trace
+            }
+        }
+
+        return new Dht(rawData); // init dht
+    }
+
+    /**
+     * Write DHT header to persistent memory.
+     * 
+     * @return whether the operation was successful
+     */
+    public boolean WriteToMemory() {
+        try {
+            this.NodeDB.close(); // Close block db
+
+            this.NodeDB = null; // Reset block db
+        } catch (IOException e) {
+            if (!CommonIO.StdoutSilenced) { // Check can print
+                e.printStackTrace(); // Print stack trace
+            }
+        }
+
+        CommonIO.MakeDirIfNotExist(CommonIO.DHTPath + "/" + this.Config.Chain); // Make db header path
+
+        try {
+            File dbHeaderFile = new File(CommonIO.DHTPath + "/" + this.Config.Chain + "/db_header.db"); // Initialize file
+
+            FileOutputStream writer = new FileOutputStream(dbHeaderFile); // Init writer
+
+            writer.write(this.Bytes()); // Write header
+
+            writer.close(); // Close writer
+        } catch (IOException e) { // Catch
+            if (!CommonIO.StdoutSilenced) { // Check can print
+                e.printStackTrace(); // Log stack trace
+
+                return false; // Failed
+            }
+        }
+
+        return true; // Success
     }
 
     /**
@@ -176,7 +236,7 @@ public class Dht implements Serializable {
                 }
             }
 
-            in.readFully(buffer); // Read into buffer
+            in.read(buffer); // Read into buffer
         } catch (Exception e) { // Catch
             if (!CommonIO.StdoutSilenced) { // Check can print
                 e.printStackTrace(); // Print stack trace
