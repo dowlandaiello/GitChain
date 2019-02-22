@@ -5,6 +5,7 @@ import com.dowlandaiello.gitchain.common.CommonNet;
 import com.dowlandaiello.gitchain.common.CommonNet.PeerAddress;
 import com.dowlandaiello.gitchain.config.ChainConfig;
 
+import org.apache.commons.lang3.SerializationUtils;
 import org.iq80.leveldb.DB;
 import org.iq80.leveldb.Options;
 
@@ -51,6 +52,19 @@ public class Dht {
     }
 
     /**
+     * Deserialize a DHT from a given byte array.
+     */
+    public Dht(byte[] rawBytes) {
+        try {
+            Dht dht = SerializationUtils.deserialize(rawBytes); // Deserialize
+
+            this.Config = dht.Config; // Set chain config
+        } catch (Exception e) { // Catch
+            return; // Return
+        }
+    }
+
+    /**
      * Attempt to bootstrap a DHT with a given bootstrap peer address, bootstrapPeerAddress.
      * 
      * @param bootstrapPeerAddress bootstrap peer address represented as a string
@@ -58,6 +72,8 @@ public class Dht {
      */
     public static Dht Bootstrap(String bootstrapPeerAddress) {
         PeerAddress parsedPeerAddress = CommonNet.ParseConnectionAddress(bootstrapPeerAddress); // Parse address
+        
+        Dht dht = null; // Init buffer
 
         Peer workingPeerIdentity = Peer.ReadPeer(); // Read local peer
 
@@ -83,6 +99,19 @@ public class Dht {
             in = new DataInputStream(socket.getInputStream()); // Init in reader
 
             out.write(connection.Bytes()); // Write connection type
+
+            in.readFully(buffer); // Read into buffer
+
+            dht = new Dht(buffer); // Deserialize DHT
+
+            Options options = new Options(); // Make DB options
+            options.createIfMissing(true); // Set options
+
+            dht.NodeDB = factory.open(new File(CommonIO.DHTPath + "/" + dht.Config.Chain), options); // Construct DB
+
+            for (ConnectionEvent connectionEvent = new ConnectionEvent(buffer); connectionEvent.Type != ConnectionEvent.ConnectionEventType.Close;) { // Check not closed
+
+            }
 
             in.readFully(buffer); // Read into buffer
         } catch (Exception e) { // Catch

@@ -31,7 +31,7 @@ public class ConnectionEventTest {
 
         ConnectionEvent testDeserializedEvent = new ConnectionEvent(new byte[0]); // Deserialize
 
-        assertTrue("invalid deserialized connection event must be null", testDeserializedEvent != connectionEvent); // Ensure null
+        assertTrue("invalid deserialized connection event must be null", testDeserializedEvent.Type == null); // Ensure null
 
         assertTrue("deserialized connection event must be equivalent to raw connection event", Arrays.equals(connectionEvent.Bytes(), deserializedEvent.Bytes())); // Ensure equivalent
     }

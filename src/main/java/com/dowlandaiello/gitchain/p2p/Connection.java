@@ -1,7 +1,10 @@
 package com.dowlandaiello.gitchain.p2p;
 
+import java.io.DataOutputStream;
+import java.io.IOException;
 import java.io.Serializable;
 import java.math.BigInteger;
+import java.net.Socket;
 
 import com.dowlandaiello.gitchain.common.CommonIO;
 
@@ -25,6 +28,9 @@ public class Connection implements Serializable {
 
     /* Recipient address */
     public String RecipientAddress;
+
+    /* Current connection */
+    public Socket WorkingSocket;
 
     /* Common connection types */
     public static enum ConnectionType {
@@ -72,6 +78,47 @@ public class Connection implements Serializable {
         this.Meta = connection.Meta; // Set meta
         this.SenderPublicKey = connection.SenderPublicKey; // Set sender
         this.RecipientAddress = connection.RecipientAddress; // Set recipient
+    }
+
+    /**
+     * Deserialize connection from given byte array, with a given socket.
+     * 
+     * @param rawBytes raw data to deserialize
+     * @param workingSocket connection socket
+     */
+    public Connection(byte[] rawBytes, Socket workingSocket) {
+        Connection connection = SerializationUtils.deserialize(rawBytes); // Deserialize
+
+        this.Type = connection.Type; // Set connection type
+        this.Meta = connection.Meta; // Set meta
+        this.SenderPublicKey = connection.SenderPublicKey; // Set sender
+        this.RecipientAddress = connection.RecipientAddress; // Set recipient
+        this.WorkingSocket = workingSocket; // Set working socket
+    }
+
+    /**
+     * Close connection from receiving peer.
+     */
+    public boolean CloseFromReceiver(DataOutputStream out) {
+        Peer workingPeerIdentity = Peer.ReadPeer(); // Read local peer
+
+        if (workingPeerIdentity.ConnectionAddr != this.RecipientAddress) { // Check not proper peer
+            return false; // Failed
+        }
+
+        try {
+            out.write(new ConnectionEvent(ConnectionEvent.ConnectionEventType.Close).Bytes()); // Write close connection
+
+            this.WorkingSocket.close(); // Close socket
+        }  catch (IOException e) { // catch
+            if (!CommonIO.StdoutSilenced) { // Check can print
+                e.printStackTrace(); // Print stack trace
+            }
+
+            return false; // Failed
+        }
+
+        return true; // Success
     }
 
     /**
