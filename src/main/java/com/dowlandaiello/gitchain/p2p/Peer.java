@@ -2,11 +2,8 @@ package com.dowlandaiello.gitchain.p2p;
 
 import java.math.BigInteger;
 
-import com.dowlandaiello.gitchain.common.CommonIO;
+import com.dowlandaiello.gitchain.account.Account;
 import com.dowlandaiello.gitchain.common.CommonNet;
-
-import org.web3j.crypto.ECKeyPair;
-import org.web3j.crypto.Keys;
 
 /**
  * Peer is a data type representing a node's public identity on a network.
@@ -25,19 +22,11 @@ public class Peer {
      * Initialize a new peer with a given connection address, generating a new key pair for the peer.
      */
     public Peer(String connectionAddr) {
-        ECKeyPair keyPair = null; // Init buffer
+        Account account = new Account(); // Initialize account
 
-        try {
-            keyPair = Keys.createEcKeyPair(); // Generate a new key pair
-        } catch (Exception e) { // Catch
-            if (!CommonIO.StdoutSilenced) { // Check can print
-                e.printStackTrace(); // Print stack trace
+        account.WriteP2PIdentityToMemory(); // Write p2p identity to memory
 
-                return; // Return
-            }
-        }
-
-        this.PublicKey = keyPair.getPublicKey(); // Set public key
+        this.PublicKey = account.PublicKey; // Set public key
         this.ConnectionAddr = connectionAddr; // Set connection addr
 
         if (connectionAddr.contains("ipv6")) { // Check IPV6
