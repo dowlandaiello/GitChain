@@ -67,7 +67,7 @@ public class DhtTest {
 
         assertTrue("chain config must not be null", chainConfig != null); // Ensure config not null
 
-        Peer bootstrapPeer = new Peer("/ipv4/127.0.0.1/tcp/3000"); // Init peer
+        Peer bootstrapPeer = new Peer("/ipv4/127.0.0.1/tcp/3048"); // Init peer
 
         Dht dht = new Dht(chainConfig, bootstrapPeer); // Initialize DHT
 

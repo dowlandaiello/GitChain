@@ -39,15 +39,19 @@ public class DhtServer {
      * Start serving.
      */
     public void StartServing() {
+        this.IsServing = true; // Set is serving
+
         ServerSocket serverSocket = null; // Initialize server
 
         try {
-            serverSocket = new ServerSocket(CommonNet.GetFreePort(CommonNet.DhtPort)); // Set server socket
+            serverSocket = new ServerSocket(CommonNet.ParseConnectionAddress(PeerIdentity.ConnectionAddr).Port); // Set
+                                                                                                                 // server
+                                                                                                                 // socket
         } catch (IOException e) { // Catch
             return; // Failed
         }
 
-        while (IsServing) { // Check should be serving
+        while (this.IsServing) { // Check should be serving
             Socket socket = null; // Init buffer
 
             DataInputStream in = null; // Init buffer

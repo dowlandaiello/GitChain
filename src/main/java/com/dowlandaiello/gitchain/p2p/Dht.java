@@ -89,9 +89,9 @@ public class Dht implements Serializable {
         Peer workingPeerIdentity = Peer.ReadPeer(); // Read local peer
 
         if (workingPeerIdentity == null) { // Invalid identity
-            workingPeerIdentity = new Peer(
-                    "/ipv4/" + CommonNet.GetPublicIPAddrWithoutUPnP() + "/tcp" + CommonNet.NodePort); // Set working
-                                                                                                      // peer identity
+            workingPeerIdentity = new Peer("/ipv4/" + CommonNet.GetPublicIPAddrWithoutUPnP() + "/tcp/"
+                    + CommonNet.GetFreePort(CommonNet.DhtPort)); // Set working
+            // peer identity
         }
 
         DhtServer server = new DhtServer(workingPeerIdentity); // Initialize DHT server
