@@ -32,11 +32,12 @@ public class CommonNet {
 
     /**
      * Get public IP address without UPnP.
+     * 
      * @return found IP address
      */
     public static String GetPublicIPAddrWithoutUPnP() {
         if (!IsConnected()) { // Check no internet connection
-            try(final DatagramSocket socket = new DatagramSocket()){
+            try (final DatagramSocket socket = new DatagramSocket()) {
                 socket.connect(InetAddress.getByName("8.8.8.8"), 10002);
                 return socket.getLocalAddress().getHostAddress(); // Return local IP
             } catch (Exception e) { // Catch
@@ -44,13 +45,13 @@ public class CommonNet {
             }
         }
 
-        for (String provider: IPProviders) { // Iterate through providers
+        for (String provider : IPProviders) { // Iterate through providers
             try {
                 URL providerURL = new URL(provider); // Make provider URL
 
                 BufferedReader req = new BufferedReader(new InputStreamReader(providerURL.openStream()));
 
-                String ip = req.readLine(); //you get the IP as a String
+                String ip = req.readLine(); // you get the IP as a String
 
                 if (ip != "") { // Check found IP
                     return ip; // Return found IP
@@ -113,6 +114,7 @@ public class CommonNet {
 
     /**
      * Check is connected to internet.
+     * 
      * @return is connected
      */
     public static boolean IsConnected() {
@@ -139,24 +141,25 @@ public class CommonNet {
     public static PeerAddress ParseConnectionAddress(String peerConnectionAddress) {
         String[] params = peerConnectionAddress.split("/"); // Split params
 
-        if (params.length < 3) { // Check invalid params
+        if (params.length < 4) { // Check invalid params
             return null; // Failed
         }
 
         Protocol protocol = null; // Init buffer
 
-        switch (params[0]) {
-            case "ipv4":
-                protocol = Protocol.IPV4; // Set protocol
-            case "ipv6":
-                protocol = Protocol.IPV6; // Set protocol
+        switch (params[1]) {
+        case "ipv4":
+            protocol = Protocol.IPV4; // Set protocol
+        case "ipv6":
+            protocol = Protocol.IPV6; // Set protocol
         }
 
-        return new PeerAddress(protocol, params[1], Integer.parseInt(params[params.length - 1])); // Return peer address
+        return new PeerAddress(protocol, params[2], Integer.parseInt(params[params.length - 1])); // Return peer address
     }
 
     /**
-     * Peer address is a data type representing a parsed peer address string commonly in the form of "/ipv4/127.0.0.1/tcp/3000"
+     * Peer address is a data type representing a parsed peer address string
+     * commonly in the form of "/ipv4/127.0.0.1/tcp/3000"
      */
     public static class PeerAddress {
         /* Address protocol */
@@ -171,9 +174,9 @@ public class CommonNet {
         /**
          * Initialize peer address with given params.
          * 
-         * @param protocol IP protocol
+         * @param protocol    IP protocol
          * @param inetAddress IP address
-         * @param port port
+         * @param port        port
          */
         public PeerAddress(Protocol protocol, String inetAddress, int port) {
             this.Protocol = protocol; // Set protocol
