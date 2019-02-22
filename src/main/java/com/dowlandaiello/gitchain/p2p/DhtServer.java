@@ -19,7 +19,7 @@ import static org.fusesource.leveldbjni.JniDBFactory.*;
 /**
  * Dht server is a simple socket-based DHT server.
  */
-public class DhtServer {
+public class DhtServer implements Runnable {
     /* Server peer identity */
     public Peer PeerIdentity;
 
@@ -33,6 +33,13 @@ public class DhtServer {
      */
     public DhtServer(Peer identity) {
         this.PeerIdentity = identity; // Set identity
+    }
+
+    /**
+     * Threading stuff.
+     */
+    public void run() {
+        this.StartServing(); // Start serving
     }
 
     /**
@@ -58,7 +65,7 @@ public class DhtServer {
 
             DataOutputStream out = null; // Init buffer
 
-            byte[] buffer = null; // Init buffer
+            byte[] buffer = new byte[500]; // Init buffer
 
             try {
                 socket = serverSocket.accept(); // Accept connection

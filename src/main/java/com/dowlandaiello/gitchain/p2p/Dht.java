@@ -98,7 +98,9 @@ public class Dht implements Serializable {
 
         this.Server = server; // Set dht server
 
-        server.StartServing(); // Start serving DHT
+        Thread thread = new Thread(this.Server); // Initialize thread
+
+        thread.start(); // Start serving DHT
     }
 
     /**
@@ -134,7 +136,7 @@ public class Dht implements Serializable {
 
         DataInputStream in = null; // Init buffer
 
-        byte[] buffer = null; // Init buffer
+        byte[] buffer = new byte[400]; // Init buffer
 
         Connection connection = new Connection(Connection.ConnectionType.DHTBootstrapRequest, workingPeerIdentity,
                 Peer.GetPeer(bootstrapPeerAddress)); // Construct connection
