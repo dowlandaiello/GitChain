@@ -86,6 +86,16 @@ public class Dht implements Serializable {
      * Start dht server.
      */
     public void StartServing() {
+        try {
+            this.NodeDB.close(); // Close node db
+        } catch (IOException e) { // Catch
+            if (!CommonIO.StdoutSilenced) { // Check can print
+                e.printStackTrace(); // Print stack trace
+            }
+
+            return; // Return
+        }
+
         Peer workingPeerIdentity = Peer.ReadPeer(); // Read local peer
 
         if (workingPeerIdentity == null) { // Invalid identity
@@ -117,7 +127,7 @@ public class Dht implements Serializable {
      * @param bootstrapPeerAddress bootstrap peer address represented as a string
      * @return bootstrapped DHT
      */
-    public static Dht Bootstrap(String bootstrapPeerAddress) {
+    public static Dht Bootstrap(String bootstrapPeerAddress, String chain) {
         PeerAddress parsedPeerAddress = CommonNet.ParseConnectionAddress(bootstrapPeerAddress); // Parse address
 
         Dht dht = null; // Init buffer
@@ -138,7 +148,7 @@ public class Dht implements Serializable {
 
         byte[] buffer = new byte[400]; // Init buffer
 
-        Connection connection = new Connection(Connection.ConnectionType.DHTBootstrapRequest, workingPeerIdentity,
+        Connection connection = new Connection(Connection.ConnectionType.DHTBootstrapRequest, new byte[][]{chain.getBytes()}, workingPeerIdentity,
                 Peer.GetPeer(bootstrapPeerAddress)); // Construct connection
 
         try {
@@ -150,7 +160,7 @@ public class Dht implements Serializable {
 
             out.write(connection.Bytes()); // Write connection type
 
-            in.readFully(buffer); // Read into buffer
+            in.read(buffer); // Read into buffer
 
             dht = new Dht(buffer); // Deserialize DHT
 
