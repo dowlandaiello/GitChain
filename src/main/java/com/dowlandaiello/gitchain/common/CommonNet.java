@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.net.ServerSocket;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.MalformedInputException;
@@ -15,6 +16,9 @@ import java.nio.charset.MalformedInputException;
 public class CommonNet {
     /* Default node port */
     public static long NodePort = 3000;
+
+    /* Default DHT port */
+    public static int DhtPort = 3048;
 
     /* Default IP lookup providers */
     public static String[] IPProviders = { "http://checkip.amazonaws.com/", "http://icanhazip.com/",
@@ -57,6 +61,54 @@ public class CommonNet {
         }
 
         return "127.0.0.1"; // ¯\_(ツ)_/¯
+    }
+
+    /**
+     * Get free port.
+     * 
+     * @param port base port
+     * @return found free port
+     */
+    public static int GetFreePort(int port) {
+        for (int newPort = port; newPort < 4000; newPort++) { // Iterate until available
+            if (Available(newPort)) { // Check port available
+                return newPort; // Return port
+            }
+        }
+
+        return port; // ¯\_(ツ)_/¯
+    }
+
+    /**
+     * Checks to see if a specific port is available.
+     *
+     * @param port the port to check for availability
+     */
+    public static boolean Available(int port) {
+        ServerSocket ss = null;
+        DatagramSocket ds = null;
+        try {
+            ss = new ServerSocket(port);
+            ss.setReuseAddress(true);
+            ds = new DatagramSocket(port);
+            ds.setReuseAddress(true);
+            return true;
+        } catch (IOException e) {
+        } finally {
+            if (ds != null) {
+                ds.close();
+            }
+
+            if (ss != null) {
+                try {
+                    ss.close();
+                } catch (IOException e) {
+                    /* should not be thrown */
+                }
+            }
+        }
+
+        return false;
     }
 
     /**
