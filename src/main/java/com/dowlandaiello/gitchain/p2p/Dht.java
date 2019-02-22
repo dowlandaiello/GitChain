@@ -81,8 +81,16 @@ public class Dht implements Serializable {
     /**
      * Start dht server.
      */
-    public void Serve() {
+    public void StartServing() {
+        Peer workingPeerIdentity = Peer.ReadPeer(); // Read local peer
 
+        if (workingPeerIdentity == null) { // Invalid identity
+            workingPeerIdentity = new Peer("/ipv4/" + CommonNet.GetPublicIPAddrWithoutUPnP() + "/tcp" + CommonNet.NodePort); // Set working peer identity
+        }
+
+        DhtServer server = new DhtServer(workingPeerIdentity); // Initialize DHT server
+
+        server.StartServing(); // Start serving DHT
     }
 
     /**
@@ -117,7 +125,7 @@ public class Dht implements Serializable {
 
         byte[] buffer = null; // Init buffer
 
-        Connection connection = new Connection(Connection.ConnectionType.DHTRequest, workingPeerIdentity, Peer.GetPeer(bootstrapPeerAddress)); // Construct connection
+        Connection connection = new Connection(Connection.ConnectionType.DHTBootstrapRequest, workingPeerIdentity, Peer.GetPeer(bootstrapPeerAddress)); // Construct connection
 
         try {
             socket = new Socket(parsedPeerAddress.InetAddress, parsedPeerAddress.Port); // Connect
