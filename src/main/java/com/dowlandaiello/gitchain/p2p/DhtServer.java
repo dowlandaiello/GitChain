@@ -116,8 +116,6 @@ public class DhtServer implements Runnable {
             handleBootstrapRequest(in, out, connection); // Handle bootstrap request
         }
 
-        connection.CloseFromReceiver(out); // Close connection
-
         try {
             in.close(); // Close input stream
             out.close(); // Close output stream

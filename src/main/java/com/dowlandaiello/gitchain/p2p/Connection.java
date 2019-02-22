@@ -7,6 +7,7 @@ import java.math.BigInteger;
 import java.net.Socket;
 
 import com.dowlandaiello.gitchain.common.CommonIO;
+import com.dowlandaiello.gitchain.p2p.ConnectionEvent.ConnectionEventType;
 
 import org.apache.commons.lang3.SerializationUtils;
 
@@ -112,7 +113,7 @@ public class Connection implements Serializable {
         }
 
         try {
-            out.write(new ConnectionEvent(ConnectionEvent.ConnectionEventType.Close, new byte[0][0]).Bytes()); // Write
+            out.write(new ConnectionEvent(ConnectionEventType.Close, new byte[0][0]).Bytes()); // Write
                                                                                                                // close
                                                                                                                // connection
 

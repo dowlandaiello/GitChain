@@ -81,7 +81,21 @@ public class Dht implements Serializable {
      * @return serialized DHT
      */
     public byte[] Bytes() {
-        return SerializationUtils.serialize(this); // Return serialized
+        try {
+            this.NodeDB.close(); // Close block db
+
+            this.NodeDB = null; // Reset block db
+        } catch (IOException e) {
+            if (!CommonIO.StdoutSilenced) { // Check can print
+                e.printStackTrace(); // Print stack trace
+            }
+        }
+
+        byte[] bytes = SerializationUtils.serialize(this); // Serialize
+
+        this.OpenNodeDB(); // Re-open node db
+
+        return bytes; // Return serialized
     }
 
     /**
@@ -261,21 +275,35 @@ public class Dht implements Serializable {
 
             dht = new Dht(buffer); // Deserialize DHT
 
+            in.read(buffer); // Read into buffer
+
             Options options = new Options(); // Make DB options
             options.createIfMissing(true); // Set options
 
+            byte[] lastReadBuffer = null; // Set last read buffer
+
             for (ConnectionEvent connectionEvent = new ConnectionEvent(
-                    buffer); connectionEvent.Type != ConnectionEvent.ConnectionEventType.Close;) { // Check not closed
-                if (connectionEvent.Type == ConnectionEventType.Response) { // Check is response
+                    buffer); connectionEvent != null;) { // Check not closed
+                if (lastReadBuffer != buffer && connectionEvent.Type == ConnectionEventType.Response) { // Check is response
                     dht.OpenNodeDB(); // Open node db
 
                     dht.NodeDB.put(connectionEvent.Meta[0], connectionEvent.Meta[1]); // Put node
 
                     dht.CloseNodeDB(); // Close node db
                 }
+
+                lastReadBuffer = buffer; // Set last read buffer
+
+                buffer = new byte[880]; // Reset buffer
+
+                if (in.read(buffer) == -1) { // Check finished
+                    break; // Break
+                }
             }
 
-            in.read(buffer); // Read into buffer
+            socket.close(); // Close socket
+            in.close(); // Close input
+            out.close(); // Close output
         } catch (Exception e) { // Catch
             if (!CommonIO.StdoutSilenced) { // Check can print
                 e.printStackTrace(); // Print stack trace
