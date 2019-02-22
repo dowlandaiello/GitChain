@@ -37,6 +37,7 @@ public class PeerTest {
     /**
      * Test peer constructor with given identity and protocol.
      */
+    @Test
     public void TestPeerProtocol() {
         Account account = new Account(); // Initialize account
 
