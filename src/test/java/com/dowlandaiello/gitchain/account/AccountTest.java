@@ -37,9 +37,9 @@ public class AccountTest {
     public void TestReadP2PAccount() {
         Account account = new Account(); // Initialize account
 
-        account.WriteToMemory("test_p2p_chain"); // Write account to memory
+        account.WriteP2PIdentityToMemory(); // Write account to memory
 
-        assertTrue("read account must be equivalent to mem account", Account.ReadAccount("test_p2p_chain").PrivateKey.equals(account.PrivateKey)); // Ensure private key equivalent
+        assertTrue("read account must be equivalent to mem account", Account.ReadP2PIdentity().PrivateKey.equals(account.PrivateKey)); // Ensure private key equivalent
     }
 
     /**
@@ -59,6 +59,6 @@ public class AccountTest {
 
         Account account = new Account(); // Initialize account
 
-        assertTrue("must write successfully", account.WriteToMemory("test_p2p_chain")); // Write account to memory
+        assertTrue("must write successfully", account.WriteToMemory()); // Write account to memory
     }
 }
