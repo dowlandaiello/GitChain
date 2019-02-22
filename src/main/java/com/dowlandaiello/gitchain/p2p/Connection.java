@@ -34,16 +34,17 @@ public class Connection implements Serializable {
 
     /* Common connection types */
     public static enum ConnectionType {
-        DHTRequest; // Connection type defs
+        DHTBootstrapRequest; // Connection type defs
     }
 
     /**
-     * Initialize a new connection metadata primitive with given connection type and meta.
+     * Initialize a new connection metadata primitive with given connection type and
+     * meta.
      * 
      * @param connectionType connection type
-     * @param meta miscellaneous metadata
-     * @param sender sender public key
-     * @param recipient recipient public key
+     * @param meta           miscellaneous metadata
+     * @param sender         sender public key
+     * @param recipient      recipient public key
      */
     public Connection(ConnectionType connectionType, byte[][] meta, Peer sender, Peer recipient) {
         this.Type = connectionType; // Set connection type
@@ -56,9 +57,9 @@ public class Connection implements Serializable {
      * Initialize a new connection metadata primitive with given connection type.
      * 
      * @param connectionType connection type
-     * @param meta miscellaneous metadata
-     * @param sender sender public key
-     * @param recipient recipient public key
+     * @param meta           miscellaneous metadata
+     * @param sender         sender public key
+     * @param recipient      recipient public key
      */
     public Connection(ConnectionType connectionType, Peer sender, Peer recipient) {
         this.Type = connectionType; // Set connection type
@@ -83,7 +84,7 @@ public class Connection implements Serializable {
     /**
      * Deserialize connection from given byte array, with a given socket.
      * 
-     * @param rawBytes raw data to deserialize
+     * @param rawBytes      raw data to deserialize
      * @param workingSocket connection socket
      */
     public Connection(byte[] rawBytes, Socket workingSocket) {
@@ -111,10 +112,12 @@ public class Connection implements Serializable {
         }
 
         try {
-            out.write(new ConnectionEvent(ConnectionEvent.ConnectionEventType.Close, new byte[0][0]).Bytes()); // Write close connection
+            out.write(new ConnectionEvent(ConnectionEvent.ConnectionEventType.Close, new byte[0][0]).Bytes()); // Write
+                                                                                                               // close
+                                                                                                               // connection
 
             this.WorkingSocket.close(); // Close socket
-        }  catch (IOException e) { // catch
+        } catch (IOException e) { // catch
             if (!CommonIO.StdoutSilenced) { // Check can print
                 e.printStackTrace(); // Print stack trace
             }
@@ -129,6 +132,6 @@ public class Connection implements Serializable {
      * Serialize connection to byte array.
      */
     public byte[] Bytes() {
-        return(SerializationUtils.serialize(this)); // Serialize
+        return (SerializationUtils.serialize(this)); // Serialize
     }
 }
