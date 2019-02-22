@@ -35,7 +35,15 @@ public class Peer implements Serializable {
      * @param connectionAddr address used for connecting to node
      */
     public Peer(String connectionAddr) {
-        Account account = new Account(); // Initialize account
+        Account account = null; // Init buffer
+
+        File keystoreFile = new File(CommonIO.P2PKeystorePath + "/identity.json"); // Init file
+
+        if (keystoreFile.exists()) { // Check already exists
+            account = Account.ReadP2PIdentity(); // Read p2p identity
+        } else {
+            account = new Account(); // Initialize account
+        }
 
         account.WriteP2PIdentityToMemory(); // Write p2p identity to memory
 
