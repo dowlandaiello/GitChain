@@ -4,6 +4,7 @@ import com.dowlandaiello.gitchain.common.CommonIO;
 import com.dowlandaiello.gitchain.common.CommonNet;
 import com.dowlandaiello.gitchain.common.CommonNet.PeerAddress;
 import com.dowlandaiello.gitchain.config.ChainConfig;
+import com.dowlandaiello.gitchain.p2p.ConnectionEvent.ConnectionEventType;
 
 import org.apache.commons.lang3.SerializationUtils;
 import org.iq80.leveldb.DB;
@@ -15,12 +16,16 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.Serializable;
 import java.net.Socket;
 
 /**
  * Dht is a synchronously managed distributed hash table used for the storage and retrieval of node lookup information.
  */
-public class Dht {
+public class Dht implements Serializable {
+    /* lol serialization */
+    static final long serialVersionUID = CommonIO.SerialVersionUID;
+
     /* DHT Chain Config */
     public ChainConfig Config;
 
@@ -65,6 +70,29 @@ public class Dht {
     }
 
     /**
+     * Serialize DHT to byte array.
+     * 
+     * @return serialized DHT
+     */
+    public byte[] Bytes() {
+        return SerializationUtils.serialize(this); // Return serialized
+    }
+
+    /**
+     * Start dht server.
+     */
+    public void Serve() {
+
+    }
+
+    /**
+     * Stop dht server.
+     */
+    public void StopServing() {
+
+    }
+
+    /**
      * Attempt to bootstrap a DHT with a given bootstrap peer address, bootstrapPeerAddress.
      * 
      * @param bootstrapPeerAddress bootstrap peer address represented as a string
@@ -72,7 +100,7 @@ public class Dht {
      */
     public static Dht Bootstrap(String bootstrapPeerAddress) {
         PeerAddress parsedPeerAddress = CommonNet.ParseConnectionAddress(bootstrapPeerAddress); // Parse address
-        
+
         Dht dht = null; // Init buffer
 
         Peer workingPeerIdentity = Peer.ReadPeer(); // Read local peer
@@ -110,7 +138,9 @@ public class Dht {
             dht.NodeDB = factory.open(new File(CommonIO.DHTPath + "/" + dht.Config.Chain), options); // Construct DB
 
             for (ConnectionEvent connectionEvent = new ConnectionEvent(buffer); connectionEvent.Type != ConnectionEvent.ConnectionEventType.Close;) { // Check not closed
-
+                if (connectionEvent.Type == ConnectionEventType.Response) { // Check is response
+                    dht.NodeDB.put(connectionEvent.Meta[0], connectionEvent.Meta[1]); // Put node
+                }
             }
 
             in.readFully(buffer); // Read into buffer
@@ -121,5 +151,7 @@ public class Dht {
                 return null; // Failed
             }
         }
+
+        return dht; // Return dht
     }
 }
