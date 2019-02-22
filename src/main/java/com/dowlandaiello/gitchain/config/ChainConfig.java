@@ -3,6 +3,7 @@ package com.dowlandaiello.gitchain.config;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.Serializable;
 import java.math.BigInteger;
 import java.nio.file.Files;
 import java.util.Map;
@@ -12,12 +13,16 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 /**
- * ChainConfig is a data type containing the chain config (including allocation).
+ * ChainConfig is a data type containing the chain config (including
+ * allocation).
  * 
  * @author Dowland Aiello
  * @since 18.02.2019
  */
-public class ChainConfig {
+public class ChainConfig implements Serializable {
+    /* lol serialization */
+    static final long serialVersionUID = CommonIO.SerialVersionUID;
+
     /* Chain supply allocation */
     public Map<BigInteger, Float> Alloc;
 
@@ -36,9 +41,9 @@ public class ChainConfig {
     /**
      * Initialize a new chain config.
      * 
-     * @param alloc chain supply allocation
+     * @param alloc   chain supply allocation
      * @param network chain network identifier
-     * @param chain chain name / version
+     * @param chain   chain name / version
      */
     public ChainConfig(Map<BigInteger, Float> alloc, int network, String chain, int blockInterval, Float difficulty) {
         this.Alloc = alloc; // Set alloc
@@ -66,7 +71,8 @@ public class ChainConfig {
     }
 
     /**
-     * Initialize a chain config from a genesis.JSON file (assumes genesis.json path is commonIO.data/genesis.JSON).
+     * Initialize a chain config from a genesis.JSON file (assumes genesis.json path
+     * is commonIO.data/genesis.JSON).
      * 
      * @return the read ChainConfig
      */

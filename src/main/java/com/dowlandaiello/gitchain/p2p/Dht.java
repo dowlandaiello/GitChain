@@ -34,7 +34,7 @@ public class Dht implements Serializable {
     public DB NodeDB;
 
     /* Dht server instance */
-    private DhtServer Server;
+    private transient DhtServer Server;
 
     /**
      * Initialize a new DHT with a given chain config.
@@ -48,7 +48,7 @@ public class Dht implements Serializable {
         this.Config = config; // Set config
 
         try {
-            CommonIO.MakeDirIfNotExist(CommonIO.DbPath); // Make db path
+            CommonIO.MakeDirIfNotExist(CommonIO.DHTPath); // Make db path
 
             this.NodeDB = factory.open(new File(CommonIO.DHTPath + "/" + config.Chain), options); // Construct DB
 
@@ -124,8 +124,8 @@ public class Dht implements Serializable {
 
         if (workingPeerIdentity == null) { // Invalid identity
             workingPeerIdentity = new Peer(
-                    "/ipv4/" + CommonNet.GetPublicIPAddrWithoutUPnP() + "/tcp" + CommonNet.NodePort); // Set working
-                                                                                                      // peer identity
+                    "/ipv4/" + CommonNet.GetPublicIPAddrWithoutUPnP() + "/tcp/" + CommonNet.NodePort); // Set working
+                                                                                                       // peer identity
         }
 
         Socket socket = null; // Init buffer
