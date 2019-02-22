@@ -102,6 +102,10 @@ public class Connection implements Serializable {
     public boolean CloseFromReceiver(DataOutputStream out) {
         Peer workingPeerIdentity = Peer.ReadPeer(); // Read local peer
 
+        if (workingPeerIdentity == null) { // Check is null
+            workingPeerIdentity = new Peer(this.RecipientAddress); // Create new peer
+        }
+
         if (workingPeerIdentity.ConnectionAddr != this.RecipientAddress) { // Check not proper peer
             return false; // Failed
         }
