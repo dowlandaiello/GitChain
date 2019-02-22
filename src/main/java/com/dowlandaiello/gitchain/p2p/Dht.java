@@ -20,7 +20,8 @@ import java.io.Serializable;
 import java.net.Socket;
 
 /**
- * Dht is a synchronously managed distributed hash table used for the storage and retrieval of node lookup information.
+ * Dht is a synchronously managed distributed hash table used for the storage
+ * and retrieval of node lookup information.
  */
 public class Dht implements Serializable {
     /* lol serialization */
@@ -32,6 +33,9 @@ public class Dht implements Serializable {
     /* Node DB */
     public DB NodeDB;
 
+    /* Dht server instance */
+    private DhtServer Server;
+
     /**
      * Initialize a new DHT with a given chain config.
      * 
@@ -42,7 +46,7 @@ public class Dht implements Serializable {
         options.createIfMissing(true); // Set options
 
         this.Config = config; // Set config
-        
+
         try {
             CommonIO.MakeDirIfNotExist(CommonIO.DbPath); // Make db path
 
@@ -85,10 +89,14 @@ public class Dht implements Serializable {
         Peer workingPeerIdentity = Peer.ReadPeer(); // Read local peer
 
         if (workingPeerIdentity == null) { // Invalid identity
-            workingPeerIdentity = new Peer("/ipv4/" + CommonNet.GetPublicIPAddrWithoutUPnP() + "/tcp" + CommonNet.NodePort); // Set working peer identity
+            workingPeerIdentity = new Peer(
+                    "/ipv4/" + CommonNet.GetPublicIPAddrWithoutUPnP() + "/tcp" + CommonNet.NodePort); // Set working
+                                                                                                      // peer identity
         }
 
         DhtServer server = new DhtServer(workingPeerIdentity); // Initialize DHT server
+
+        this.Server = server; // Set dht server
 
         server.StartServing(); // Start serving DHT
     }
@@ -97,11 +105,12 @@ public class Dht implements Serializable {
      * Stop dht server.
      */
     public void StopServing() {
-
+        this.Server.StopServing(); // Stop serving
     }
 
     /**
-     * Attempt to bootstrap a DHT with a given bootstrap peer address, bootstrapPeerAddress.
+     * Attempt to bootstrap a DHT with a given bootstrap peer address,
+     * bootstrapPeerAddress.
      * 
      * @param bootstrapPeerAddress bootstrap peer address represented as a string
      * @return bootstrapped DHT
@@ -114,7 +123,9 @@ public class Dht implements Serializable {
         Peer workingPeerIdentity = Peer.ReadPeer(); // Read local peer
 
         if (workingPeerIdentity == null) { // Invalid identity
-            workingPeerIdentity = new Peer("/ipv4/" + CommonNet.GetPublicIPAddrWithoutUPnP() + "/tcp" + CommonNet.NodePort); // Set working peer identity
+            workingPeerIdentity = new Peer(
+                    "/ipv4/" + CommonNet.GetPublicIPAddrWithoutUPnP() + "/tcp" + CommonNet.NodePort); // Set working
+                                                                                                      // peer identity
         }
 
         Socket socket = null; // Init buffer
@@ -125,7 +136,8 @@ public class Dht implements Serializable {
 
         byte[] buffer = null; // Init buffer
 
-        Connection connection = new Connection(Connection.ConnectionType.DHTBootstrapRequest, workingPeerIdentity, Peer.GetPeer(bootstrapPeerAddress)); // Construct connection
+        Connection connection = new Connection(Connection.ConnectionType.DHTBootstrapRequest, workingPeerIdentity,
+                Peer.GetPeer(bootstrapPeerAddress)); // Construct connection
 
         try {
             socket = new Socket(parsedPeerAddress.InetAddress, parsedPeerAddress.Port); // Connect
@@ -145,7 +157,8 @@ public class Dht implements Serializable {
 
             dht.NodeDB = factory.open(new File(CommonIO.DHTPath + "/" + dht.Config.Chain), options); // Construct DB
 
-            for (ConnectionEvent connectionEvent = new ConnectionEvent(buffer); connectionEvent.Type != ConnectionEvent.ConnectionEventType.Close;) { // Check not closed
+            for (ConnectionEvent connectionEvent = new ConnectionEvent(
+                    buffer); connectionEvent.Type != ConnectionEvent.ConnectionEventType.Close;) { // Check not closed
                 if (connectionEvent.Type == ConnectionEventType.Response) { // Check is response
                     dht.NodeDB.put(connectionEvent.Meta[0], connectionEvent.Meta[1]); // Put node
                 }

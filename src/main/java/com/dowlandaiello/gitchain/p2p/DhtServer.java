@@ -85,6 +85,13 @@ public class DhtServer {
     }
 
     /**
+     * Stop serving DHT.
+     */
+    public void StopServing() {
+        this.IsServing = false; // Stop serving
+    }
+
+    /**
      * Handle received connection.
      * 
      * @param connection connection to handle
