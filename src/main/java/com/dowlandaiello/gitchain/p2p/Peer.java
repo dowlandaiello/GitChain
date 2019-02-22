@@ -95,6 +95,16 @@ public class Peer implements Serializable {
     }
 
     /**
+     * Attempt to construct a peer from a given connection address.
+     * 
+     * @param connectionAddr connection address
+     * @return found peer info
+     */
+    public static Peer GetPeer(String connectionAddr) {
+        return new Peer(connectionAddr, null); // Return peer
+    }
+
+    /**
      * Read peer config from persistent memory.
      * 
      * @return read peer
@@ -107,9 +117,7 @@ public class Peer implements Serializable {
         try {
             rawJSON = Files.readAllBytes(peerFile.toPath()); // Read JSON
         } catch (IOException e) { // Catch
-            if (!CommonIO.StdoutSilenced) { // Check can print
-                e.printStackTrace(); // Log stack trace
-            }
+            return null; // Failed
         }
 
         Peer peer = new Peer(rawJSON); // init chain config

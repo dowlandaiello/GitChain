@@ -15,7 +15,7 @@ public class Connection implements Serializable {
     static final long serialVersionUID = CommonIO.SerialVersionUID;
 
     /* Connection type */
-    public ConnectionType ConnectionType;
+    public ConnectionType Type;
 
     /* Meta params */
     public byte[][] Meta;
@@ -23,11 +23,11 @@ public class Connection implements Serializable {
     /* Sender public key */
     public BigInteger SenderPublicKey;
 
-    /* Recipient public key */
-    public BigInteger RecipientPublicKey;
+    /* Recipient address */
+    public String RecipientAddress;
 
     /* Common connection types */
-    public enum ConnectionType {
+    public static enum ConnectionType {
         DHTRequest; // Connection type defs
     }
 
@@ -40,10 +40,10 @@ public class Connection implements Serializable {
      * @param recipient recipient public key
      */
     public Connection(ConnectionType connectionType, byte[][] meta, Peer sender, Peer recipient) {
-        this.ConnectionType = connectionType; // Set connection type
+        this.Type = connectionType; // Set connection type
         this.Meta = meta; // Set meta
         this.SenderPublicKey = sender.PublicKey; // Set sender
-        this.RecipientPublicKey = recipient.PublicKey; // Set recipient
+        this.RecipientAddress = recipient.ConnectionAddr; // Set recipient
     }
 
     /**
@@ -55,9 +55,9 @@ public class Connection implements Serializable {
      * @param recipient recipient public key
      */
     public Connection(ConnectionType connectionType, Peer sender, Peer recipient) {
-        this.ConnectionType = connectionType; // Set connection type
+        this.Type = connectionType; // Set connection type
         this.SenderPublicKey = sender.PublicKey; // Set sender
-        this.RecipientPublicKey = recipient.PublicKey; // Set recipient
+        this.RecipientAddress = recipient.ConnectionAddr; // Set recipient
     }
 
     /**
@@ -68,10 +68,10 @@ public class Connection implements Serializable {
     public Connection(byte[] rawBytes) {
         Connection connection = SerializationUtils.deserialize(rawBytes); // Deserialize
 
-        this.ConnectionType = connection.ConnectionType; // Set connection type
+        this.Type = connection.Type; // Set connection type
         this.Meta = connection.Meta; // Set meta
         this.SenderPublicKey = connection.SenderPublicKey; // Set sender
-        this.RecipientPublicKey = connection.RecipientPublicKey; // Set recipient
+        this.RecipientAddress = connection.RecipientAddress; // Set recipient
     }
 
     /**

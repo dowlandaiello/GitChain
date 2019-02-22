@@ -4,13 +4,13 @@ import com.dowlandaiello.gitchain.common.CommonIO;
 import com.dowlandaiello.gitchain.common.CommonNet;
 import com.dowlandaiello.gitchain.common.CommonNet.PeerAddress;
 import com.dowlandaiello.gitchain.config.ChainConfig;
-import com.dowlandaiello.gitchain.p2p.Connection.ConnectionType;
 
 import org.iq80.leveldb.DB;
 import org.iq80.leveldb.Options;
 
 import static org.fusesource.leveldbjni.JniDBFactory.*;
 
+import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.IOException;
@@ -59,16 +59,32 @@ public class Dht {
     public static Dht Bootstrap(String bootstrapPeerAddress) {
         PeerAddress parsedPeerAddress = CommonNet.ParseConnectionAddress(bootstrapPeerAddress); // Parse address
 
+        Peer workingPeerIdentity = Peer.ReadPeer(); // Read local peer
+
+        if (workingPeerIdentity == null) { // Invalid identity
+            workingPeerIdentity = new Peer("/ipv4/" + CommonNet.GetPublicIPAddrWithoutUPnP() + "/tcp" + CommonNet.NodePort); // Set working peer identity
+        }
+
         Socket socket = null; // Init buffer
 
         DataOutputStream out = null; // Init buffer
+
+        DataInputStream in = null; // Init buffer
+
+        byte[] buffer = null; // Init buffer
+
+        Connection connection = new Connection(Connection.ConnectionType.DHTRequest, workingPeerIdentity, Peer.GetPeer(bootstrapPeerAddress)); // Construct connection
 
         try {
             socket = new Socket(parsedPeerAddress.InetAddress, parsedPeerAddress.Port); // Connect
 
             out = new DataOutputStream(socket.getOutputStream()); // Init out writer
 
-            out.write(ConnectionType.DHTRequest.name().getBytes()); // Write connection type
+            in = new DataInputStream(socket.getInputStream()); // Init in reader
+
+            out.write(connection.Bytes()); // Write connection type
+
+            in.readFully(buffer); // Read into buffer
         } catch (Exception e) { // Catch
             if (!CommonIO.StdoutSilenced) { // Check can print
                 e.printStackTrace(); // Print stack trace
