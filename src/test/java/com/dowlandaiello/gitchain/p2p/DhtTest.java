@@ -71,6 +71,8 @@ public class DhtTest {
 
         Dht dht = new Dht(chainConfig, bootstrapPeer); // Initialize DHT
 
+        dht.WriteToMemory(); // Write DHT to persistent memory
+
         dht.StartServing(); // Start DHT server
 
         assertTrue("dht must not be null", dht != null); // Ensure DHT is not null

@@ -83,7 +83,7 @@ public class DhtServer implements Runnable {
                 continue; // Continue
             }
 
-            Connection connection = new Connection(buffer); // Deserialize connection
+            Connection connection = new Connection(buffer, socket); // Deserialize connection
 
             this.handleConnection(connection, socket, in, out); // handle
         }
@@ -142,8 +142,13 @@ public class DhtServer implements Runnable {
         options.createIfMissing(true); // Set options
 
         DB nodeDb = null; // Init buffer
+        Dht dht = null; // Init buffer
 
         try {
+            dht = Dht.ReadFromMemory(new String(connection.Meta[0])); // Read dht
+
+            out.write(dht.Bytes()); // Write DB
+            
             nodeDb = factory.open(new File(CommonIO.DHTPath + "/" + new String(connection.Meta[0])), options); // Construct
                                                                                                                // DB
         } catch (IOException e) { // Catch

@@ -139,6 +139,43 @@ public class Dht implements Serializable {
             }
         }
 
+        return this.OpenNodeDB(); // Re-open node db
+    }
+
+    /**
+     * Open dht node database.
+     */
+    public boolean OpenNodeDB() {
+        try {
+            Options options = new Options(); // Make DB options
+            options.createIfMissing(true); // Set options
+
+            this.NodeDB = factory.open(new File(CommonIO.DbPath + "/" + this.Config.Chain), options); // Open DB
+        } catch (IOException e) {
+            if (!CommonIO.StdoutSilenced) { // Check can print
+                e.printStackTrace(); // Log stack trace
+            }
+
+            return false; // Failed
+        }
+
+        return true; // Success
+    }
+
+    /**
+     * Close dht node database.
+     */
+    public boolean CloseNodeDB() {
+        try {
+            this.NodeDB.close(); // Close db
+        } catch (IOException e) {
+            if (!CommonIO.StdoutSilenced) { // Check can print
+                e.printStackTrace(); // Log stack trace
+            }
+
+            return false; // Failed
+        }
+
         return true; // Success
     }
 
@@ -206,7 +243,7 @@ public class Dht implements Serializable {
 
         DataInputStream in = null; // Init buffer
 
-        byte[] buffer = new byte[400]; // Init buffer
+        byte[] buffer = new byte[880]; // Init buffer
 
         Connection connection = new Connection(Connection.ConnectionType.DHTBootstrapRequest, new byte[][]{chain.getBytes()}, workingPeerIdentity,
                 Peer.GetPeer(bootstrapPeerAddress)); // Construct connection
@@ -227,12 +264,14 @@ public class Dht implements Serializable {
             Options options = new Options(); // Make DB options
             options.createIfMissing(true); // Set options
 
-            dht.NodeDB = factory.open(new File(CommonIO.DHTPath + "/" + dht.Config.Chain), options); // Construct DB
-
             for (ConnectionEvent connectionEvent = new ConnectionEvent(
                     buffer); connectionEvent.Type != ConnectionEvent.ConnectionEventType.Close;) { // Check not closed
                 if (connectionEvent.Type == ConnectionEventType.Response) { // Check is response
+                    dht.OpenNodeDB(); // Open node db
+
                     dht.NodeDB.put(connectionEvent.Meta[0], connectionEvent.Meta[1]); // Put node
+
+                    dht.CloseNodeDB(); // Close node db
                 }
             }
 
