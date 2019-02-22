@@ -1,13 +1,17 @@
 package com.dowlandaiello.gitchain.p2p;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.io.Serializable;
 import java.math.BigInteger;
+import java.nio.file.Files;
 
 import com.dowlandaiello.gitchain.account.Account;
 import com.dowlandaiello.gitchain.common.CommonIO;
 import com.dowlandaiello.gitchain.common.CommonNet;
-
-import org.apache.commons.lang3.SerializationUtils;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 /**
  * Peer is a data type representing a node's public identity on a network.
@@ -76,16 +80,68 @@ public class Peer implements Serializable {
     }
 
     /**
-     * Deserialize a peer from given raw data, rawByte.
+     * Deserialize a peer from given raw JSON, rawJSON.
      * 
-     * @param rawBytes raw data to deserialize
+     * @param rawJSON raw JSON to deserialize
      */
-    public Peer(byte[] rawBytes) {
-        Peer peer = SerializationUtils.deserialize(rawBytes); // Deserialize
+    public Peer(byte[] rawJSON) {
+        Gson gson = new GsonBuilder().setPrettyPrinting().create(); // Init gson
+
+        Peer peer = gson.fromJson(new String(rawJSON), Peer.class); // Deserialize
 
         this.PublicKey = peer.PublicKey; // Set public key
         this.Protocol = peer.Protocol; // Set protocol
         this.ConnectionAddr = peer.ConnectionAddr; // Set connection address
+    }
+
+    /**
+     * Read peer config from persistent memory.
+     * 
+     * @return read peer
+     */
+    public static Peer ReadPeer() {
+        File peerFile = new File(CommonIO.P2PKeystorePath + "/peer.json"); // Init file
+
+        byte[] rawJSON = null; // Declare buffer
+
+        try {
+            rawJSON = Files.readAllBytes(peerFile.toPath()); // Read JSON
+        } catch (IOException e) { // Catch
+            if (!CommonIO.StdoutSilenced) { // Check can print
+                e.printStackTrace(); // Log stack trace
+            }
+        }
+
+        Peer peer = new Peer(rawJSON); // init chain config
+
+        return peer; // Return peer
+    }
+
+    /**
+     * Write peer config to persistent memory.
+     * 
+     * @return whether the operation was successful
+     */
+    public boolean WriteToMemory() {
+        Gson gson = new GsonBuilder().setPrettyPrinting().create(); // Init gson
+
+        CommonIO.MakeDirIfNotExist(CommonIO.P2PKeystorePath); // Make p2p keystore path
+
+        try {
+            FileWriter writer = new FileWriter(new File(CommonIO.P2PKeystorePath + "/peer.json")); // Init writer
+
+            gson.toJson(this, writer); // Write gson
+
+            writer.close(); // Close writer
+        } catch (IOException e) { // Catch
+            if (!CommonIO.StdoutSilenced) { // Check can print
+                e.printStackTrace(); // Log stack trace
+
+                return false; // Failed
+            }
+        }
+
+        return true; // Success
     }
 
     /**
@@ -94,6 +150,8 @@ public class Peer implements Serializable {
      * @return 
      */
     public byte[] Bytes() {
-        return(SerializationUtils.serialize(this)); // Serialize
+        Gson gson = new GsonBuilder().setPrettyPrinting().create(); // Init gson
+
+        return(gson.toJson(this).getBytes()); // Serialize
     }
 }
