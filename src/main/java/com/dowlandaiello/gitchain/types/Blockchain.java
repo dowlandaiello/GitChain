@@ -74,7 +74,7 @@ public class Blockchain {
         this.GenesisBlock = genesisBlock; // Set genesis
 
         try {
-            CommonIO.MakeDirIfNotExist(CommonIO.DataPath); // Make data path
+            CommonIO.MakeDirIfNotExist(CommonIO.DbPath); // Make db path
 
             this.BlockDB = factory.open(new File(CommonIO.DbPath + "/" + chainConfig.Chain), options); // Construct DB
 
