@@ -120,6 +120,10 @@ public class Peer implements Serializable {
     public static Peer ReadPeer() {
         File peerFile = new File(CommonIO.P2PKeystorePath + "/peer.json"); // Init file
 
+        if (!peerFile.exists()) { // Check peer identity doesn't exist
+            return null; // Return null
+        }
+
         byte[] rawJSON = null; // Declare buffer
 
         try {
