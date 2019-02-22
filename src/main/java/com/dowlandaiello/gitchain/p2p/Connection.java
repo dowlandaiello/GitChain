@@ -107,7 +107,7 @@ public class Connection implements Serializable {
         }
 
         try {
-            out.write(new ConnectionEvent(ConnectionEvent.ConnectionEventType.Close).Bytes()); // Write close connection
+            out.write(new ConnectionEvent(ConnectionEvent.ConnectionEventType.Close, new byte[0][0]).Bytes()); // Write close connection
 
             this.WorkingSocket.close(); // Close socket
         }  catch (IOException e) { // catch

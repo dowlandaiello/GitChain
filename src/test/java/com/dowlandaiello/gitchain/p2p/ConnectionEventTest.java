@@ -15,7 +15,7 @@ public class ConnectionEventTest {
      */
     @Test
     public void TestConnectionEvent() {
-        ConnectionEvent connectionEvent = new ConnectionEvent(ConnectionEvent.ConnectionEventType.Close); // Initialize connection event
+        ConnectionEvent connectionEvent = new ConnectionEvent(ConnectionEvent.ConnectionEventType.Close, new byte[0][0]); // Initialize connection event
 
         assertTrue("connection event must not be null", connectionEvent != null); // Ensure event is not null
     }
@@ -25,7 +25,7 @@ public class ConnectionEventTest {
      */
     @Test
     public void TestConnectionEventFromBytes() {
-        ConnectionEvent connectionEvent = new ConnectionEvent(ConnectionEvent.ConnectionEventType.Close); // Initialize connection event
+        ConnectionEvent connectionEvent = new ConnectionEvent(ConnectionEvent.ConnectionEventType.Close, new byte[0][0]); // Initialize connection event
 
         ConnectionEvent deserializedEvent = new ConnectionEvent(connectionEvent.Bytes()); // Deserialize
 
@@ -41,7 +41,7 @@ public class ConnectionEventTest {
      */
     @Test
     public void TestBytes() {
-        ConnectionEvent connectionEvent = new ConnectionEvent(ConnectionEvent.ConnectionEventType.Close); // Initialize connection event
+        ConnectionEvent connectionEvent = new ConnectionEvent(ConnectionEvent.ConnectionEventType.Close, new byte[0][0]); // Initialize connection event
 
         assertTrue("connection event bytes must not be null", connectionEvent.Bytes() != null); // Ensure event is not null
     }

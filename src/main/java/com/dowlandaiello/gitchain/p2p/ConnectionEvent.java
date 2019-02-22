@@ -16,10 +16,13 @@ public class ConnectionEvent implements Serializable {
     /* Event type */
     public ConnectionEventType Type;
 
+    /* Miscellaneous event data */
+    public byte[][] Meta;
+
 
     /* Event types */
     public static enum ConnectionEventType {
-        Close;
+        Close, Response;
     }
 
     /**
@@ -27,8 +30,9 @@ public class ConnectionEvent implements Serializable {
      * 
      * @param type connection even type
      */
-    public ConnectionEvent(ConnectionEventType type) {
+    public ConnectionEvent(ConnectionEventType type, byte[][] data) {
         this.Type = type; // Set type
+        this.Meta = data; // Set meta
     }
 
     /**
@@ -39,6 +43,7 @@ public class ConnectionEvent implements Serializable {
             ConnectionEvent connectionEvent = SerializationUtils.deserialize(rawBytes); // Deserialize
 
             this.Type = connectionEvent.Type; // Set connection event type
+            this.Meta = connectionEvent.Meta; // Set meta
         } catch (Exception e) { // Catch
             return; // Return
         }
