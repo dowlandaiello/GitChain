@@ -74,7 +74,7 @@ public class DhtServer implements Runnable {
 
                 out = new DataOutputStream(socket.getOutputStream()); // Set output stream
 
-                in.readFully(buffer); // Read into buffer
+                in.read(buffer); // Read into buffer
             } catch (IOException e) { // Catch
                 if (!CommonIO.StdoutSilenced) { // Check stdout silenced
                     e.printStackTrace(); // Print stack trace

@@ -75,7 +75,7 @@ public class DhtTest {
 
         assertTrue("dht must not be null", dht != null); // Ensure DHT is not null
 
-        Dht bootstrappedDht = Dht.Bootstrap(bootstrapPeer.ConnectionAddr); // Bootstrap peer
+        Dht bootstrappedDht = Dht.Bootstrap(bootstrapPeer.ConnectionAddr, "test_chain"); // Bootstrap peer
 
         assertTrue("dht must not be null", bootstrappedDht != null); // Ensure DHT is not null
         assertTrue("dht instances must be equivalent", Arrays.equals(dht.Bytes(), bootstrappedDht.Bytes())); // Ensure
