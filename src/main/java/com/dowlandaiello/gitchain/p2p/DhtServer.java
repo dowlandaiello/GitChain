@@ -114,8 +114,12 @@ public class DhtServer implements Runnable {
         switch (connection.Type) { // Handle connection types
         case DHTBootstrapRequest: // Handle bootstrap request
             handleBootstrapRequest(in, out, connection); // Handle bootstrap request
+
+            break; // Break
         case PeerJoinRequest: // Handle peer join request
             handlePeerJoinRequest(connection); // handle join request
+
+            break; // Break
         }
 
         try {
