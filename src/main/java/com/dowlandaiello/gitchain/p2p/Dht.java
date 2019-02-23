@@ -155,7 +155,7 @@ public class Dht implements Serializable {
             }
         }
 
-        return this.OpenNodeDB(); // Re-open node db
+        return false; // Re-open node db
     }
 
     /**
