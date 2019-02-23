@@ -35,7 +35,7 @@ public class Connection implements Serializable {
 
     /* Common connection types */
     public static enum ConnectionType {
-        DHTBootstrapRequest; // Connection type defs
+        DHTBootstrapRequest, PeerJoinRequest; // Connection type defs
     }
 
     /**
@@ -114,8 +114,8 @@ public class Connection implements Serializable {
 
         try {
             out.write(new ConnectionEvent(ConnectionEventType.Close, new byte[0][0]).Bytes()); // Write
-                                                                                                               // close
-                                                                                                               // connection
+                                                                                               // close
+                                                                                               // connection
 
             this.WorkingSocket.close(); // Close socket
         } catch (IOException e) { // catch
