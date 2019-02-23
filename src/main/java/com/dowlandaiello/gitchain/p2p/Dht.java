@@ -8,6 +8,7 @@ import com.dowlandaiello.gitchain.p2p.ConnectionEvent.ConnectionEventType;
 
 import org.apache.commons.lang3.SerializationUtils;
 import org.iq80.leveldb.DB;
+import org.iq80.leveldb.DBIterator;
 import org.iq80.leveldb.Options;
 
 import static org.fusesource.leveldbjni.JniDBFactory.*;
@@ -73,6 +74,54 @@ public class Dht implements Serializable {
         } catch (Exception e) { // Catch
             return; // Return
         }
+    }
+
+    /**
+     * Announce presence to all nodes in a given DHT.
+     * 
+     * @return whether the operation was successful
+     */
+    public boolean JoinNetwork() {
+        Peer workingPeerIdentity = Peer.ReadPeer(); // Read local peer
+
+        if (workingPeerIdentity == null) { // Invalid identity
+            workingPeerIdentity = new Peer("/ipv4/" + CommonNet.GetPublicIPAddrWithoutUPnP() + "/tcp/"
+                    + CommonNet.GetFreePort(CommonNet.DhtPort)); // Set working
+            // peer identity
+        }
+
+        if (WorkingNodeDB.get(workingPeerIdentity.PublicKey.toByteArray()) != null) { // Check key already exists
+            return true; // Already done
+        }
+
+        DBIterator iterator = Dht.WorkingNodeDB.iterator(); // Get iterator
+
+        for (iterator.seekToFirst(); iterator.hasNext(); iterator.next()) { // Iterate through keys
+            Peer destinationPeer = new Peer(iterator.peekNext().getValue()); // Get dest peer identity
+
+            PeerAddress parsedPeerAddress = CommonNet.ParseConnectionAddress(destinationPeer.ConnectionAddr); // Parse
+
+            Connection connection = new Connection(Connection.ConnectionType.PeerJoinRequest,
+                    new byte[][] { workingPeerIdentity.Bytes() }, workingPeerIdentity, destinationPeer); // Construct
+                                                                                                         // connection
+
+            try {
+                Socket socket = new Socket(parsedPeerAddress.InetAddress, parsedPeerAddress.Port); // Connect
+
+                DataOutputStream out = new DataOutputStream(socket.getOutputStream()); // Init out writer
+
+                out.write(connection.Bytes()); // Write connection
+
+                socket.close(); // Close socket
+                out.close(); // Close out writer
+            } catch (IOException e) { // Catch
+                continue; // Continue
+            }
+        }
+
+        WorkingNodeDB.put(workingPeerIdentity.PublicKey.toByteArray(), workingPeerIdentity.Bytes()); // Add to local db
+
+        return true; // Success
     }
 
     /**
