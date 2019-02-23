@@ -99,11 +99,10 @@ public class CommonIO {
             File parentFile = file.getParentFile();
             // a symbolic link has a different name between the canonical and absolute path
             return !canonicalFile.getName().equals(absoluteFile.getName()) ||
-                    // or the canonical parent path is not the same as the file's parent path,
-                    // provided the file has a parent path
+            // or the canonical parent path is not the same as the file's parent path,
+            // provided the file has a parent path
                     parentFile != null && !parentFile.getCanonicalPath().equals(canonicalFile.getParent());
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             // error on the side of caution
             return true;
         }
@@ -124,7 +123,8 @@ public class CommonIO {
      * No clue
      */
     public static class ByteArrayToBase64TypeAdapter implements JsonSerializer<byte[]>, JsonDeserializer<byte[]> {
-        public byte[] deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+        public byte[] deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
+                throws JsonParseException {
             return org.apache.commons.codec.binary.Base64.decodeBase64(json.getAsString()); // Decode
         }
 
