@@ -184,6 +184,8 @@ public class Dht implements Serializable {
     public boolean CloseNodeDB() {
         try {
             this.NodeDB.close(); // Close db
+
+            this.NodeDB = null; // Reset node db
         } catch (IOException e) {
             if (!CommonIO.StdoutSilenced) { // Check can print
                 e.printStackTrace(); // Log stack trace
