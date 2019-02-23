@@ -8,6 +8,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.dowlandaiello.gitchain.common.CommonIO;
 import com.dowlandaiello.gitchain.config.ChainConfig;
 
 import org.junit.Test;
@@ -51,6 +52,9 @@ public class DhtTest {
      */
     @Test
     public void TestBootstrap() {
+        assertTrue("must remove test cache",
+                CommonIO.DeleteDirectoryContents(new java.io.File(CommonIO.DHTPath + "/" + "test_chain"))); // Delete
+
         ECKeyPair keyPair = null; // Init buffer
 
         try {
@@ -86,5 +90,10 @@ public class DhtTest {
                                                                                                              // equivalent
 
         dht.StopServing(); // Stop DHT server
+
+        assertTrue("must close db", dht.CloseNodeDB()); // Close db
+
+        assertTrue("must remove test cache",
+                CommonIO.DeleteDirectoryContents(new java.io.File(CommonIO.DHTPath + "/" + "test_chain"))); // Delete
     }
 }
