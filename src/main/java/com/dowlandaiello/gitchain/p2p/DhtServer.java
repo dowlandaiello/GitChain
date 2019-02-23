@@ -113,6 +113,8 @@ public class DhtServer implements Runnable {
         switch (connection.Type) { // Handle connection types
         case DHTBootstrapRequest: // Handle bootstrap request
             handleBootstrapRequest(in, out, connection); // Handle bootstrap request
+        case PeerJoinRequest: // Handle peer join request
+            handlePeerJoinRequest(connection); // handle join request
         }
 
         try {
@@ -134,7 +136,7 @@ public class DhtServer implements Runnable {
      * @param in  input stream
      * @param out output stream
      */
-    public void handleBootstrapRequest(DataInputStream in, DataOutputStream out, Connection connection) {
+    private void handleBootstrapRequest(DataInputStream in, DataOutputStream out, Connection connection) {
         Options options = new Options(); // Make DB options
         options.createIfMissing(true); // Set options
 
@@ -182,5 +184,14 @@ public class DhtServer implements Runnable {
         }
 
         return; // Return
+    }
+
+    /**
+     * Handle incoming peer join request.
+     * 
+     * @param connection
+     */
+    private void handlePeerJoinRequest(Connection connection) {
+
     }
 }
