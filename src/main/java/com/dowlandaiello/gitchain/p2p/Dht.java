@@ -82,9 +82,11 @@ public class Dht implements Serializable {
      */
     public byte[] Bytes() {
         try {
-            this.NodeDB.close(); // Close block db
+            if (this.NodeDB != null) { // Check node db already opened
+                this.NodeDB.close(); // Close node db
 
-            this.NodeDB = null; // Reset block db
+                this.NodeDB = null; // Reset node db
+            }
         } catch (IOException e) {
             if (!CommonIO.StdoutSilenced) { // Check can print
                 e.printStackTrace(); // Print stack trace
