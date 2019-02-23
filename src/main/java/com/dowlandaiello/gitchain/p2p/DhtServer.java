@@ -10,7 +10,6 @@ import java.net.Socket;
 import com.dowlandaiello.gitchain.common.CommonIO;
 import com.dowlandaiello.gitchain.common.CommonNet;
 
-import org.iq80.leveldb.DB;
 import org.iq80.leveldb.DBIterator;
 import org.iq80.leveldb.Options;
 
@@ -139,16 +138,17 @@ public class DhtServer implements Runnable {
         Options options = new Options(); // Make DB options
         options.createIfMissing(true); // Set options
 
-        DB nodeDb = null; // Init buffer
         Dht dht = null; // Init buffer
 
         try {
             dht = Dht.ReadFromMemory(new String(connection.Meta[0])); // Read dht
 
             out.write(dht.Bytes()); // Write DB
-            
-            nodeDb = factory.open(new File(CommonIO.DHTPath + "/" + new String(connection.Meta[0])), options); // Construct
-                                                                                                               // DB
+
+            if (Dht.WorkingNodeDB == null) { // Check no db
+                Dht.WorkingNodeDB = factory.open(new File(CommonIO.DHTPath + "/" + new String(connection.Meta[0])),
+                        options); // Construct db
+            }
         } catch (IOException e) { // Catch
             if (!CommonIO.StdoutSilenced) { // Check can print
                 e.printStackTrace(); // Print stack trace
@@ -157,7 +157,7 @@ public class DhtServer implements Runnable {
             }
         }
 
-        DBIterator iterator = nodeDb.iterator(); // Get iterator
+        DBIterator iterator = Dht.WorkingNodeDB.iterator(); // Get iterator
 
         try {
             for (iterator.seekToFirst(); iterator.hasNext(); iterator.next()) {
@@ -173,7 +173,6 @@ public class DhtServer implements Runnable {
             }
 
             iterator.close(); // Close iterator
-            nodeDb.close(); // Close db
         } catch (IOException e) { // Catch
             if (!CommonIO.StdoutSilenced) { // Check can print
                 e.printStackTrace(); // Print stack trace

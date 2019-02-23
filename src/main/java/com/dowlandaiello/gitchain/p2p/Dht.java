@@ -20,9 +20,6 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.net.Socket;
 import java.nio.file.Files;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Map.Entry;
 
 /**
  * Dht is a synchronously managed distributed hash table used for the storage
@@ -36,7 +33,7 @@ public class Dht implements Serializable {
     public ChainConfig Config;
 
     /* Node DB */
-    public DB NodeDB;
+    public static transient DB WorkingNodeDB = null;
 
     /* Dht server instance */
     private transient DhtServer Server;
@@ -55,9 +52,9 @@ public class Dht implements Serializable {
         try {
             CommonIO.MakeDirIfNotExist(CommonIO.DHTPath); // Make db path
 
-            this.NodeDB = factory.open(new File(CommonIO.DHTPath + "/" + config.Chain), options); // Construct DB
+            WorkingNodeDB = factory.open(new File(CommonIO.DHTPath + "/" + config.Chain), options); // Construct DB
 
-            this.NodeDB.put(bootstrapPeer.PublicKey.toByteArray(), bootstrapPeer.Bytes()); // Add bootstrap
+            WorkingNodeDB.put(bootstrapPeer.PublicKey.toByteArray(), bootstrapPeer.Bytes()); // Add bootstrap
         } catch (IOException e) { // Catch
             if (!CommonIO.StdoutSilenced) { // Check can print
                 e.printStackTrace(); // Print stack trace
@@ -87,10 +84,10 @@ public class Dht implements Serializable {
         boolean lolNothingToReopenDumbDumb = true; // :(
 
         try {
-            if (this.NodeDB != null) { // Check node db already opened
-                this.NodeDB.close(); // Close node db
+            if (WorkingNodeDB != null) { // Check node db already opened
+                WorkingNodeDB.close(); // Close node db
 
-                this.NodeDB = null; // Reset node db
+                WorkingNodeDB = null; // Reset node db
 
                 lolNothingToReopenDumbDumb = false; // Set to false
             }
@@ -137,9 +134,9 @@ public class Dht implements Serializable {
      */
     public boolean WriteToMemory() {
         try {
-            this.NodeDB.close(); // Close block db
+            WorkingNodeDB.close(); // Close node db
 
-            this.NodeDB = null; // Reset block db
+            WorkingNodeDB = null; // Reset node db
         } catch (IOException e) {
             if (!CommonIO.StdoutSilenced) { // Check can print
                 e.printStackTrace(); // Print stack trace
@@ -149,7 +146,8 @@ public class Dht implements Serializable {
         CommonIO.MakeDirIfNotExist(CommonIO.DHTPath + "/" + this.Config.Chain); // Make db header path
 
         try {
-            File dbHeaderFile = new File(CommonIO.DHTPath + "/" + this.Config.Chain + "/db_header.db"); // Initialize file
+            File dbHeaderFile = new File(CommonIO.DHTPath + "/" + this.Config.Chain + "/db_header.db"); // Initialize
+                                                                                                        // file
 
             FileOutputStream writer = new FileOutputStream(dbHeaderFile); // Init writer
 
@@ -175,7 +173,7 @@ public class Dht implements Serializable {
             Options options = new Options(); // Make DB options
             options.createIfMissing(true); // Set options
 
-            this.NodeDB = factory.open(new File(CommonIO.DbPath + "/" + this.Config.Chain), options); // Open DB
+            WorkingNodeDB = factory.open(new File(CommonIO.DbPath + "/" + this.Config.Chain), options); // Open DB
         } catch (IOException e) {
             if (!CommonIO.StdoutSilenced) { // Check can print
                 e.printStackTrace(); // Log stack trace
@@ -192,9 +190,9 @@ public class Dht implements Serializable {
      */
     public boolean CloseNodeDB() {
         try {
-            this.NodeDB.close(); // Close db
+            WorkingNodeDB.close(); // Close db
 
-            this.NodeDB = null; // Reset node db
+            WorkingNodeDB = null; // Reset node db
         } catch (IOException e) {
             if (!CommonIO.StdoutSilenced) { // Check can print
                 e.printStackTrace(); // Log stack trace
@@ -210,18 +208,6 @@ public class Dht implements Serializable {
      * Start dht server.
      */
     public void StartServing() {
-        try {
-            if (this.NodeDB != null) { // Check has open node db
-                this.NodeDB.close(); // Close node db   
-            }
-        } catch (IOException e) { // Catch
-            if (!CommonIO.StdoutSilenced) { // Check can print
-                e.printStackTrace(); // Print stack trace
-            }
-
-            return; // Return
-        }
-
         Peer workingPeerIdentity = Peer.ReadPeer(); // Read local peer
 
         if (workingPeerIdentity == null) { // Invalid identity
@@ -274,8 +260,9 @@ public class Dht implements Serializable {
 
         byte[] buffer = new byte[880]; // Init buffer
 
-        Connection connection = new Connection(Connection.ConnectionType.DHTBootstrapRequest, new byte[][]{chain.getBytes()}, workingPeerIdentity,
-                Peer.GetPeer(bootstrapPeerAddress)); // Construct connection
+        Connection connection = new Connection(Connection.ConnectionType.DHTBootstrapRequest,
+                new byte[][] { chain.getBytes() }, workingPeerIdentity, Peer.GetPeer(bootstrapPeerAddress)); // Construct
+                                                                                                             // connection
 
         try {
             socket = new Socket(parsedPeerAddress.InetAddress, parsedPeerAddress.Port); // Connect
@@ -297,13 +284,11 @@ public class Dht implements Serializable {
 
             byte[] lastReadBuffer = null; // Set last read buffer
 
-            Map<byte[], byte[]> tempDb = new HashMap<byte[], byte[]>(); // Initialize temp db
-
-            for (ConnectionEvent connectionEvent = new ConnectionEvent(
-                    buffer); connectionEvent != null;) { // Check not closed
-                if (lastReadBuffer != buffer && connectionEvent.Type == ConnectionEventType.Response) { // Check is response
-                    tempDb.put(connectionEvent.Meta[0], connectionEvent.Meta[1]); // Put node
-                    // dht.NodeDB.put(connectionEvent.Meta[0], connectionEvent.Meta[1]); // Put node
+            for (ConnectionEvent connectionEvent = new ConnectionEvent(buffer); connectionEvent != null;) { // Check not
+                                                                                                            // closed
+                if (lastReadBuffer != buffer && connectionEvent.Type == ConnectionEventType.Response) { // Check is
+                                                                                                        // response
+                    WorkingNodeDB.put(connectionEvent.Meta[0], connectionEvent.Meta[1]); // Put node
                 }
 
                 lastReadBuffer = buffer; // Set last read buffer
@@ -318,20 +303,6 @@ public class Dht implements Serializable {
             socket.close(); // Close socket
             in.close(); // Close input
             out.close(); // Close output
-
-            dht.OpenNodeDB(); // Open node db
-
-            java.util.Iterator<Map.Entry<byte[], byte[]>> i = tempDb.entrySet().iterator(); // Init iterator
-
-            while (i.hasNext()) { // Iterate through temp db
-                Entry<byte[], byte[]> pair = (Map.Entry<byte[], byte[]>)i.next(); // Get pair
-
-                dht.NodeDB.put(pair.getKey(), pair.getValue()); // Put pair
-
-                i.remove(); // Remove
-            }
-
-            dht.CloseNodeDB(); // Close node db
         } catch (Exception e) { // Catch
             if (!CommonIO.StdoutSilenced) { // Check can print
                 e.printStackTrace(); // Print stack trace
