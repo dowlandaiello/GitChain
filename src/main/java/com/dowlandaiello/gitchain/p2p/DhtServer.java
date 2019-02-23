@@ -9,6 +9,7 @@ import java.net.Socket;
 
 import com.dowlandaiello.gitchain.common.CommonIO;
 import com.dowlandaiello.gitchain.common.CommonNet;
+import com.dowlandaiello.gitchain.common.CommonNet.PeerAddress;
 
 import org.iq80.leveldb.DBIterator;
 import org.iq80.leveldb.Options;
@@ -192,6 +193,52 @@ public class DhtServer implements Runnable {
      * @param connection
      */
     private void handlePeerJoinRequest(Connection connection) {
+        DBIterator iterator = Dht.WorkingNodeDB.iterator(); // Get iterator
 
+        if (Dht.WorkingNodeDB.get(connection.Meta[0]) != null) { // Check already exists
+            return; // Return
+        }
+
+        Dht.WorkingNodeDB.put(new Peer(connection.Meta[0]).PublicKey.toByteArray(),
+                new Peer(connection.Meta[0]).Bytes()); // Put new peer
+
+        try {
+            for (iterator.seekToFirst(); iterator.hasNext(); iterator.next()) {
+                if (iterator.peekNext().getKey() != this.PeerIdentity.PublicKey.toByteArray()
+                        && iterator.peekNext().getKey() != new Peer(connection.Meta[0]).PublicKey.toByteArray()) { // Check
+                                                                                                                   // isn't
+                                                                                                                   // same
+                                                                                                                   // peer
+
+                    Peer destinationPeer = new Peer(iterator.peekNext().getValue()); // Deserialize peer
+
+                    PeerAddress parsedPeerAddress = CommonNet.ParseConnectionAddress(destinationPeer.ConnectionAddr); // Parse
+
+                    Connection newConnection = new Connection(Connection.ConnectionType.PeerJoinRequest,
+                            connection.Meta, this.PeerIdentity, destinationPeer); // Construct connection
+
+                    try {
+                        Socket socket = new Socket(parsedPeerAddress.InetAddress, parsedPeerAddress.Port); // Connect
+
+                        DataOutputStream out = new DataOutputStream(socket.getOutputStream()); // Init out writer
+
+                        out.write(newConnection.Bytes()); // Write connection
+
+                        socket.close(); // Close socket
+                        out.close(); // Close out writer
+                    } catch (IOException e) { // Catch
+                        continue; // Continue
+                    }
+                }
+            }
+
+            iterator.close(); // Close iterator
+        } catch (IOException e) { // Catch
+            if (!CommonIO.StdoutSilenced) { // Check can print
+                e.printStackTrace(); // Print stack trace
+
+                return; // Return
+            }
+        }
     }
 }
