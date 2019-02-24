@@ -65,7 +65,7 @@ public class DhtServer implements Runnable {
 
             DataOutputStream out = null; // Init buffer
 
-            byte[] buffer = new byte[800]; // Init buffer
+            byte[] buffer = new byte[896]; // Init buffer
 
             try {
                 socket = serverSocket.accept(); // Accept connection

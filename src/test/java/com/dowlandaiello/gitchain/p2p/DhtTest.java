@@ -133,6 +133,8 @@ public class DhtTest {
 
         Peer bootstrapPeer = new Peer("/ipv4/127.0.0.1/tcp/3048"); // Init peer
 
+        Peer secondaryPeer = new Peer("/ipv4/127.0.0.1/tcp/3049", keyPair.getPublicKey()); // Initialize peer
+
         Dht dht = new Dht(chainConfig, bootstrapPeer); // Initialize DHT
 
         dht.WriteToMemory(); // Write DHT to persistent memory
@@ -149,7 +151,8 @@ public class DhtTest {
                                                                                                              // instances
                                                                                                              // equivalent
 
-        assertTrue("must be able to join network", bootstrappedDht.JoinNetwork()); // Attempt to join network
+        assertTrue("must be able to join network", bootstrappedDht.JoinNetwork(secondaryPeer)); // Attempt to join
+                                                                                                // network
 
         dht.StopServing(); // Stop DHT server
 

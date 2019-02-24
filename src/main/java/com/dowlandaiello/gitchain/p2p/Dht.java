@@ -4,6 +4,7 @@ import com.dowlandaiello.gitchain.common.CommonIO;
 import com.dowlandaiello.gitchain.common.CommonNet;
 import com.dowlandaiello.gitchain.common.CommonNet.PeerAddress;
 import com.dowlandaiello.gitchain.config.ChainConfig;
+import com.dowlandaiello.gitchain.crypto.Sha;
 import com.dowlandaiello.gitchain.p2p.ConnectionEvent.ConnectionEventType;
 
 import org.apache.commons.lang3.SerializationUtils;
@@ -55,7 +56,8 @@ public class Dht implements Serializable {
 
             WorkingNodeDB = factory.open(new File(CommonIO.DHTPath + "/" + config.Chain), options); // Construct DB
 
-            WorkingNodeDB.put(bootstrapPeer.PublicKey.toByteArray(), bootstrapPeer.Bytes()); // Add bootstrap
+            WorkingNodeDB.put(Sha.Sha3(bootstrapPeer.ConnectionAddr.getBytes()), bootstrapPeer.Bytes()); // Add
+                                                                                                         // bootstrap
         } catch (IOException e) { // Catch
             if (!CommonIO.StdoutSilenced) { // Check can print
                 e.printStackTrace(); // Print stack trace
@@ -90,11 +92,20 @@ public class Dht implements Serializable {
             // peer identity
         }
 
-        if (WorkingNodeDB.get(workingPeerIdentity.PublicKey.toByteArray()) != null) { // Check key already exists
+        return this.JoinNetwork(workingPeerIdentity); // Success
+    }
+
+    /**
+     * Announce presence to all nodes in a given DHT.
+     * 
+     * @return whether the operation was successful
+     */
+    public boolean JoinNetwork(Peer peerIdentity) {
+        DBIterator iterator = Dht.WorkingNodeDB.iterator(); // Get iterator
+
+        if (WorkingNodeDB.get(Sha.Sha3(peerIdentity.ConnectionAddr.getBytes())) != null) { // Check key already exists
             return true; // Already done
         }
-
-        DBIterator iterator = Dht.WorkingNodeDB.iterator(); // Get iterator
 
         for (iterator.seekToFirst(); iterator.hasNext(); iterator.next()) { // Iterate through keys
             Peer destinationPeer = new Peer(iterator.peekNext().getValue()); // Get dest peer identity
@@ -102,8 +113,8 @@ public class Dht implements Serializable {
             PeerAddress parsedPeerAddress = CommonNet.ParseConnectionAddress(destinationPeer.ConnectionAddr); // Parse
 
             Connection connection = new Connection(Connection.ConnectionType.PeerJoinRequest,
-                    new byte[][] { workingPeerIdentity.Bytes() }, workingPeerIdentity, destinationPeer); // Construct
-                                                                                                         // connection
+                    new byte[][] { peerIdentity.Bytes() }, peerIdentity, destinationPeer); // Construct
+                                                                                           // connection
 
             try {
                 Socket socket = new Socket(parsedPeerAddress.InetAddress, parsedPeerAddress.Port); // Connect
@@ -119,7 +130,18 @@ public class Dht implements Serializable {
             }
         }
 
-        WorkingNodeDB.put(workingPeerIdentity.PublicKey.toByteArray(), workingPeerIdentity.Bytes()); // Add to local db
+        try {
+            iterator.close(); // Close iterator
+        } catch (IOException e) { // Catch
+            return false; // Return
+        }
+
+        if (WorkingNodeDB.get(Sha.Sha3(peerIdentity.ConnectionAddr.getBytes())) != null) { // Check already exists
+            return true; // Return
+        }
+
+        WorkingNodeDB.put(Sha.Sha3(peerIdentity.ConnectionAddr.getBytes()), peerIdentity.Bytes()); // Add to local
+                                                                                                   // db
 
         return true; // Success
     }
@@ -337,7 +359,9 @@ public class Dht implements Serializable {
                                                                                                             // closed
                 if (lastReadBuffer != buffer && connectionEvent.Type == ConnectionEventType.Response) { // Check is
                                                                                                         // response
-                    WorkingNodeDB.put(connectionEvent.Meta[0], connectionEvent.Meta[1]); // Put node
+                    if (WorkingNodeDB.get(connectionEvent.Meta[0]) == null) { // Check is unique
+                        WorkingNodeDB.put(connectionEvent.Meta[0], connectionEvent.Meta[1]); // Put node
+                    }
                 }
 
                 lastReadBuffer = buffer; // Set last read buffer
